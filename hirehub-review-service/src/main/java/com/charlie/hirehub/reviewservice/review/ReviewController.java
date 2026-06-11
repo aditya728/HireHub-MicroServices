@@ -15,7 +15,7 @@ DELETE /reviews/{reviewId}
  */
 @RestController
 @RequestMapping("/reviews")
-public class ReviewController {
+public class ReviewController{
 
     ReviewService reviewService;
 

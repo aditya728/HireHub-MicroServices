@@ -8,7 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/company")
-public class CompanyController {
+public class CompanyController{
 
     CompanyService companyService;
 
