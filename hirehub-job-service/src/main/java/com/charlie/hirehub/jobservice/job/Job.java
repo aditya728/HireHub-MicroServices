@@ -18,7 +18,7 @@ public class Job {
     private Integer maxSalary;
     private String location;
 
-    private long companyId;
+    private Long companyId;
 
     /*
     A noArg Constructor is needed as JPA needs to create instances of entity class while retrieval of data

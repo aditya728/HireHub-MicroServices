@@ -1,5 +1,6 @@
 package com.charlie.hirehub.jobservice.job;
 
+import com.charlie.hirehub.jobservice.job.dto.JobWithCompanyDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class JobController{
     }
 
     @GetMapping
-    public ResponseEntity<List<Job>> findAllJobs(){
+    public ResponseEntity<List<JobWithCompanyDTO>> findAllJobs(){
         return new ResponseEntity<>(jobService.findAllJobs(), HttpStatus.OK);
     }
 

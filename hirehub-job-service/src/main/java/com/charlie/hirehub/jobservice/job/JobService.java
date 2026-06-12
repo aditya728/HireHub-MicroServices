@@ -1,10 +1,12 @@
 package com.charlie.hirehub.jobservice.job;
 
+import com.charlie.hirehub.jobservice.job.dto.JobWithCompanyDTO;
+
 import java.util.List;
 
 public interface JobService {
 
-    List<Job> findAllJobs();
+    List<JobWithCompanyDTO> findAllJobs();
 
     void createJob(Job job);
 
