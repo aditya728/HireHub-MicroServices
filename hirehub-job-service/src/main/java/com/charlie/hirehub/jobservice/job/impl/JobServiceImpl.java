@@ -37,17 +37,19 @@ public class JobServiceImpl implements JobService {
 
     private JobWithCompanyDTO convertToJobWithCompanyDto(Job job){
 
-        Long companyId = job.getCompanyId();
-        Company company = new Company();
         RestTemplate restTemplate = new RestTemplate();
-
-        if(companyId != null)
-            company = restTemplate.getForObject("http://localhost:8085/company/" + companyId, Company.class);
 
         JobWithCompanyDTO jobWithCompany = new JobWithCompanyDTO();
         jobWithCompany.setJob(job);
-        jobWithCompany.setCompany(company);
 
+        Long companyId = job.getCompanyId();
+        if(companyId != null)
+            try{
+                Company company = restTemplate.getForObject("http://localhost:8085/company/" + companyId, Company.class);
+                jobWithCompany.setCompany(company);
+            }catch(Exception e){
+                jobWithCompany.setCompany(null);
+            }
         return jobWithCompany;
     }
 
