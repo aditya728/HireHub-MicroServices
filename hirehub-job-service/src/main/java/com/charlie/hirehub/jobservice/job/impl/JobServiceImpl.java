@@ -6,6 +6,7 @@ import com.charlie.hirehub.jobservice.job.JobRepository;
 import com.charlie.hirehub.jobservice.job.JobService;
 import com.charlie.hirehub.jobservice.job.dto.JobWithCompanyDTO;
 import com.charlie.hirehub.jobservice.job.external.Company;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,6 +18,9 @@ import java.util.Optional;
 public class JobServiceImpl implements JobService {
 
     JobRepository jobRepo;
+
+    @Autowired
+    RestTemplate restTemplate;
 
     public JobServiceImpl(JobRepository jobRepo){
         this.jobRepo = jobRepo;
@@ -37,15 +41,13 @@ public class JobServiceImpl implements JobService {
 
     private JobWithCompanyDTO convertToJobWithCompanyDto(Job job){
 
-        RestTemplate restTemplate = new RestTemplate();
-
         JobWithCompanyDTO jobWithCompany = new JobWithCompanyDTO();
         jobWithCompany.setJob(job);
 
         Long companyId = job.getCompanyId();
         if(companyId != null)
             try{
-                Company company = restTemplate.getForObject("http://localhost:8085/company/" + companyId, Company.class);
+                Company company = restTemplate.getForObject("http://COMPANY-SERVICE/company/" + companyId, Company.class);
                 jobWithCompany.setCompany(company);
             }catch(Exception e){
                 jobWithCompany.setCompany(null);

@@ -2,12 +2,14 @@ package com.charlie.hirehub.eureka_server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
 
 @SpringBootApplication
-public class HirehubEurekaServerApplication {
+@EnableEurekaServer
+public class EurekaServerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(HirehubEurekaServerApplication.class, args);
+		SpringApplication.run(EurekaServerApplication.class, args);
 	}
 
 }
