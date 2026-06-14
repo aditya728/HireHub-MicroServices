@@ -1,16 +1,16 @@
 package com.charlie.hirehub.jobservice.job;
 
-import com.charlie.hirehub.jobservice.job.dto.JobWithCompanyDTO;
+import com.charlie.hirehub.jobservice.job.dto.JobDTO;
 
 import java.util.List;
 
 public interface JobService {
 
-    List<JobWithCompanyDTO> findAllJobs();
+    List<JobDTO> findAllJobs();
 
     void createJob(Job job);
 
-    Job getJobById(Long id);
+    JobDTO getJobById(Long id);
 
     boolean deleteJobById(Long id);
 
