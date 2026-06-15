@@ -4,6 +4,8 @@ package com.charlie.hirehub.jobservice.job.impl;
 import com.charlie.hirehub.jobservice.job.Job;
 import com.charlie.hirehub.jobservice.job.JobRepository;
 import com.charlie.hirehub.jobservice.job.JobService;
+import com.charlie.hirehub.jobservice.job.clients.CompanyClient;
+import com.charlie.hirehub.jobservice.job.clients.ReviewClient;
 import com.charlie.hirehub.jobservice.job.dto.JobDTO;
 import com.charlie.hirehub.jobservice.job.external.Company;
 import com.charlie.hirehub.jobservice.job.external.Review;
@@ -23,13 +25,19 @@ import java.util.Optional;
 @Service
 public class JobServiceImpl implements JobService {
 
-    JobRepository jobRepo;
-
     @Autowired
     RestTemplate restTemplate;
 
-    public JobServiceImpl(JobRepository jobRepo){
+    private final JobRepository jobRepo;
+
+    private final CompanyClient companyClient;
+
+    private final ReviewClient reviewClient;
+
+    public JobServiceImpl(JobRepository jobRepo, CompanyClient companyClient, ReviewClient reviewClient){
         this.jobRepo = jobRepo;
+        this.companyClient = companyClient;
+        this.reviewClient = reviewClient;
     }
 
     @Override
@@ -53,17 +61,19 @@ public class JobServiceImpl implements JobService {
         Long companyId = job.getCompanyId();
         if(companyId != null) {
             try {
-                company = restTemplate.getForObject("http://COMPANY-SERVICE/company/" + companyId, Company.class);
+//                company = restTemplate.getForObject("http://COMPANY-SERVICE/company/" + companyId, Company.class);
+                company = companyClient.getCompany(companyId);
             } catch (Exception e) {
                 e.printStackTrace();
             }
             try{
-                ResponseEntity<List<Review>> reviewResponse = restTemplate.exchange("http://REVIEW-SERVICE/reviews?companyId=" + companyId,
-                        HttpMethod.GET,
-                        null,
-                        new ParameterizedTypeReference<List<Review>>(){}
-                );
-                reviews = reviewResponse.getBody();
+//                ResponseEntity<List<Review>> reviewResponse = restTemplate.exchange("http://REVIEW-SERVICE/reviews?companyId=" + companyId,
+//                        HttpMethod.GET,
+//                        null,
+//                       new ParameterizedTypeReference<List<Review>>(){}
+//               );
+//               reviews = reviewResponse.getBody();
+                reviews = reviewClient.getReviews(companyId);
             }catch(Exception e) {
                 e.printStackTrace();
             }
