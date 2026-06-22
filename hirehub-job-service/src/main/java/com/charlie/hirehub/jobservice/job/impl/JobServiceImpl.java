@@ -10,11 +10,14 @@ import com.charlie.hirehub.jobservice.job.dto.JobDTO;
 import com.charlie.hirehub.jobservice.job.external.Company;
 import com.charlie.hirehub.jobservice.job.external.Review;
 import com.charlie.hirehub.jobservice.job.mapper.JobMapper;
+import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -41,6 +44,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @CircuitBreaker(name = "companyBreaker")
     public List<JobDTO> findAllJobs() {
         List<Job> jobs= jobRepo.findAll();
 
@@ -61,20 +65,13 @@ public class JobServiceImpl implements JobService {
         Long companyId = job.getCompanyId();
         if(companyId != null) {
             try {
-//                company = restTemplate.getForObject("http://COMPANY-SERVICE/company/" + companyId, Company.class);
                 company = companyClient.getCompany(companyId);
-            } catch (Exception e) {
+            } catch (FeignException.NotFound e) {
                 e.printStackTrace();
             }
             try{
-//                ResponseEntity<List<Review>> reviewResponse = restTemplate.exchange("http://REVIEW-SERVICE/reviews?companyId=" + companyId,
-//                        HttpMethod.GET,
-//                        null,
-//                       new ParameterizedTypeReference<List<Review>>(){}
-//               );
-//               reviews = reviewResponse.getBody();
                 reviews = reviewClient.getReviews(companyId);
-            }catch(Exception e) {
+            }catch(FeignException.NotFound e) {
                 e.printStackTrace();
             }
         }
