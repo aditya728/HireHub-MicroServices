@@ -4,21 +4,15 @@ package com.charlie.hirehub.jobservice.job.impl;
 import com.charlie.hirehub.jobservice.job.Job;
 import com.charlie.hirehub.jobservice.job.JobRepository;
 import com.charlie.hirehub.jobservice.job.JobService;
-import com.charlie.hirehub.jobservice.job.clients.CompanyClient;
 import com.charlie.hirehub.jobservice.job.clients.ReviewClient;
 import com.charlie.hirehub.jobservice.job.dto.JobDTO;
 import com.charlie.hirehub.jobservice.job.external.Company;
 import com.charlie.hirehub.jobservice.job.external.Review;
+import com.charlie.hirehub.jobservice.job.integration.CompanyClientService;
 import com.charlie.hirehub.jobservice.job.mapper.JobMapper;
 import feign.FeignException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,23 +22,19 @@ import java.util.Optional;
 @Service
 public class JobServiceImpl implements JobService {
 
-    @Autowired
-    RestTemplate restTemplate;
-
     private final JobRepository jobRepo;
 
-    private final CompanyClient companyClient;
+    private final CompanyClientService companyClientService;
 
     private final ReviewClient reviewClient;
 
-    public JobServiceImpl(JobRepository jobRepo, CompanyClient companyClient, ReviewClient reviewClient){
+    public JobServiceImpl(JobRepository jobRepo, CompanyClientService companyClientService, ReviewClient reviewClient){
         this.jobRepo = jobRepo;
-        this.companyClient = companyClient;
+        this.companyClientService = companyClientService;
         this.reviewClient = reviewClient;
     }
 
     @Override
-    @CircuitBreaker(name = "companyBreaker")
     public List<JobDTO> findAllJobs() {
         List<Job> jobs= jobRepo.findAll();
 
@@ -53,7 +43,6 @@ public class JobServiceImpl implements JobService {
             JobDTO jobWithCompany = convertToJobWithCompanyDto(job);
             jobsWithCompanyDetails.add(jobWithCompany);
         }
-
         return jobsWithCompanyDetails;
     }
 
@@ -65,7 +54,7 @@ public class JobServiceImpl implements JobService {
         Long companyId = job.getCompanyId();
         if(companyId != null) {
             try {
-                company = companyClient.getCompany(companyId);
+                company = companyClientService.getCompany(companyId);
             } catch (FeignException.NotFound e) {
                 e.printStackTrace();
             }
