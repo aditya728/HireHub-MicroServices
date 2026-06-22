@@ -4,14 +4,13 @@ package com.charlie.hirehub.jobservice.job.impl;
 import com.charlie.hirehub.jobservice.job.Job;
 import com.charlie.hirehub.jobservice.job.JobRepository;
 import com.charlie.hirehub.jobservice.job.JobService;
-import com.charlie.hirehub.jobservice.job.clients.ReviewClient;
 import com.charlie.hirehub.jobservice.job.dto.JobDTO;
 import com.charlie.hirehub.jobservice.job.external.Company;
 import com.charlie.hirehub.jobservice.job.external.Review;
 import com.charlie.hirehub.jobservice.job.integration.CompanyClientService;
+import com.charlie.hirehub.jobservice.job.integration.ReviewClientService;
 import com.charlie.hirehub.jobservice.job.mapper.JobMapper;
 import feign.FeignException;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,12 +25,12 @@ public class JobServiceImpl implements JobService {
 
     private final CompanyClientService companyClientService;
 
-    private final ReviewClient reviewClient;
+    private final ReviewClientService reviewClientService;
 
-    public JobServiceImpl(JobRepository jobRepo, CompanyClientService companyClientService, ReviewClient reviewClient){
+    public JobServiceImpl(JobRepository jobRepo, CompanyClientService companyClientService, ReviewClientService reviewClientService){
         this.jobRepo = jobRepo;
         this.companyClientService = companyClientService;
-        this.reviewClient = reviewClient;
+        this.reviewClientService = reviewClientService;
     }
 
     @Override
@@ -59,7 +58,7 @@ public class JobServiceImpl implements JobService {
                 e.printStackTrace();
             }
             try{
-                reviews = reviewClient.getReviews(companyId);
+                reviews = reviewClientService.getReviews(companyId);
             }catch(FeignException.NotFound e) {
                 e.printStackTrace();
             }

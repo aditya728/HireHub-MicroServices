@@ -2,6 +2,7 @@ package com.charlie.hirehub.jobservice.job.integration;
 
 import com.charlie.hirehub.jobservice.job.clients.CompanyClient;
 import com.charlie.hirehub.jobservice.job.external.Company;
+import feign.FeignException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
@@ -16,14 +17,25 @@ public class CompanyClientService {
         this.companyClient = companyClient;
     }
 
-    @Retry(name = "companyRetry")
+    @Retry(name = "companyRetry",
+            fallbackMethod = "getCompanyFallback")
     @CircuitBreaker(name = "companyBreaker",
             fallbackMethod = "getCompanyFallback")
     public Company getCompany(Long companyId){
-       return companyClient.getCompany(companyId);
+        try{
+            System.out.println("Calling Company Service");
+            return companyClient.getCompany(companyId);
+        }catch(FeignException.NotFound e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public Company getCompanyFallback(Long companyId, Exception e){
+
+        System.out.println("COMPANY FALLBACK");
+        System.out.println(e.getClass());
+
         return null;
     }
 }
