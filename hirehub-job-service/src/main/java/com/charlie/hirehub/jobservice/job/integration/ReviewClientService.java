@@ -2,6 +2,7 @@ package com.charlie.hirehub.jobservice.job.integration;
 
 import com.charlie.hirehub.jobservice.job.clients.ReviewClient;
 import com.charlie.hirehub.jobservice.job.external.Review;
+import feign.FeignException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.stereotype.Service;
@@ -18,16 +19,19 @@ public class ReviewClientService {
         this.reviewClient = reviewClient;
     }
 
-    @CircuitBreaker(name = "reviewBreaker", fallbackMethod = "getReviewsFallback")
     @Retry(name = "reviewRetry")
+    @CircuitBreaker(name = "reviewBreaker", fallbackMethod = "getReviewsFallback")
     public List<Review> getReviews(Long companyId){
+        System.out.println("Calling Review Service");
         return reviewClient.getReviews(companyId);
     }
 
     public List<Review> getReviewsFallback(Long companyId, Exception e) {
-        System.out.println("REVIEW FALLBACK");
-        System.out.println(e.getClass());
+        if(e instanceof FeignException.NotFound){
+            throw (FeignException.NotFound) e;
+        }
 
+        System.out.println("Review Service unavailable, returning empty reviews");
         return Collections.emptyList();
     }
 }

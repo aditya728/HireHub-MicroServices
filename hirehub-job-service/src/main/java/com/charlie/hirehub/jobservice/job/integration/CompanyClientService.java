@@ -20,18 +20,16 @@ public class CompanyClientService {
     @CircuitBreaker(name = "companyBreaker", fallbackMethod = "getCompanyFallback")
     @Retry(name = "companyRetry")
     public Company getCompany(Long companyId){
-        try{
-            System.out.println("Calling Company Service");
-            return companyClient.getCompany(companyId);
-        }catch(FeignException.NotFound e){
-            return null;
-        }
+        System.out.println("Calling Company Service");
+        return companyClient.getCompany(companyId);
     }
 
     public Company getCompanyFallback(Long companyId, Exception e){
-        System.out.println("COMPANY FALLBACK");
-        System.out.println(e.getClass().getName());
+        if(e instanceof FeignException.NotFound){
+            throw (FeignException.NotFound) e;
+        }
 
+        System.out.println("Company Service unavailable, returning null");
         return null;
     }
 }
