@@ -55,6 +55,7 @@ public class JobServiceImpl implements JobService {
             try {
                 company = companyClientService.getCompany(companyId);
             } catch (FeignException.NotFound e) {
+                System.out.println("In catch block of JobServiceImpl.java");
                 e.printStackTrace();
             }
             try{

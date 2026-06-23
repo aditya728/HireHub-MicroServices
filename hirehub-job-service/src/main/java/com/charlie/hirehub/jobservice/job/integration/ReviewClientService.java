@@ -18,15 +18,13 @@ public class ReviewClientService {
         this.reviewClient = reviewClient;
     }
 
-    @Retry(name = "reviewRetry", fallbackMethod = "getReviewsFallback")
-    @CircuitBreaker(name = "reviewBreaker",
-            fallbackMethod = "getReviewsFallback")
+    @CircuitBreaker(name = "reviewBreaker", fallbackMethod = "getReviewsFallback")
+    @Retry(name = "reviewRetry")
     public List<Review> getReviews(Long companyId){
         return reviewClient.getReviews(companyId);
     }
 
     public List<Review> getReviewsFallback(Long companyId, Exception e) {
-
         System.out.println("REVIEW FALLBACK");
         System.out.println(e.getClass());
 

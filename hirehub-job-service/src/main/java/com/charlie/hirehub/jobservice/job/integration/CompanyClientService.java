@@ -5,7 +5,7 @@ import com.charlie.hirehub.jobservice.job.external.Company;
 import feign.FeignException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
-import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,24 +17,20 @@ public class CompanyClientService {
         this.companyClient = companyClient;
     }
 
-    @Retry(name = "companyRetry",
-            fallbackMethod = "getCompanyFallback")
-    @CircuitBreaker(name = "companyBreaker",
-            fallbackMethod = "getCompanyFallback")
+    @CircuitBreaker(name = "companyBreaker", fallbackMethod = "getCompanyFallback")
+    @Retry(name = "companyRetry")
     public Company getCompany(Long companyId){
         try{
             System.out.println("Calling Company Service");
             return companyClient.getCompany(companyId);
         }catch(FeignException.NotFound e){
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public Company getCompanyFallback(Long companyId, Exception e){
-
         System.out.println("COMPANY FALLBACK");
-        System.out.println(e.getClass());
+        System.out.println(e.getClass().getName());
 
         return null;
     }
