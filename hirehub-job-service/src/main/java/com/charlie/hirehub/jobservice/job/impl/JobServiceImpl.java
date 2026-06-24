@@ -52,17 +52,17 @@ public class JobServiceImpl implements JobService {
 
         Long companyId = job.getCompanyId();
         if(companyId != null) {
-            try {
+//            try {
                 company = companyClientService.getCompany(companyId);
-            } catch (FeignException.NotFound e) {
-                System.out.println("In catch block of JobServiceImpl.java");
-                e.printStackTrace();
-            }
-            try{
+//            } catch (FeignException.NotFound e) {
+//                System.out.println("In catch block of JobServiceImpl.java");
+//                e.printStackTrace();
+//            }
+//            try{
                 reviews = reviewClientService.getReviews(companyId);
-            }catch(FeignException.NotFound e) {
-                e.printStackTrace();
-            }
+//            }catch(FeignException.NotFound e) {
+//                e.printStackTrace();
+//            }
         }
         return JobMapper.mapToJobWithCompanyDTO(job, company, reviews);
     }

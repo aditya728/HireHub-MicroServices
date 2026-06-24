@@ -4,8 +4,9 @@ import com.charlie.hirehub.jobservice.job.clients.CompanyClient;
 import com.charlie.hirehub.jobservice.job.external.Company;
 import feign.FeignException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +18,7 @@ public class CompanyClientService {
         this.companyClient = companyClient;
     }
 
+    @RateLimiter(name = "companyRateLimiter", fallbackMethod = "getCompanyRateLimiterFallback")
     @CircuitBreaker(name = "companyBreaker", fallbackMethod = "getCompanyFallback")
     @Retry(name = "companyRetry")
     public Company getCompany(Long companyId){
@@ -25,11 +27,12 @@ public class CompanyClientService {
     }
 
     public Company getCompanyFallback(Long companyId, Exception e){
-        if(e instanceof FeignException.NotFound){
-            throw (FeignException.NotFound) e;
-        }
-
-        System.out.println("Company Service unavailable, returning null");
+        System.out.println("Company unavailable, returning NULL, " + e.getClass());
         return null;
+    }
+
+    public Company getCompanyRateLimiterFallback(Long companyId, RequestNotPermitted e){
+        System.out.println("RATE LIMIT EXCEEDED");
+        throw e;
     }
 }
