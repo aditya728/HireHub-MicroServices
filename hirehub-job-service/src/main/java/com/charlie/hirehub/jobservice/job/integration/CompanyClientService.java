@@ -48,7 +48,7 @@ public class CompanyClientService {
     public Company validateCompanyFallback(Long companyId, Exception e){
         System.out.println("Validate Company Fallback");
         if(e instanceof FeignException.NotFound){
-            throw new CompanyNotFoundException();
+            throw new CompanyNotFoundException("Company with id: " + companyId + " does not exist");
         }
 
         throw new CompanyServiceUnavailableException();

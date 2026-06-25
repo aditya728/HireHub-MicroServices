@@ -12,7 +12,7 @@ public interface JobService {
 
     JobDTO getJobById(Long id);
 
-    boolean deleteJobById(Long id);
+    void deleteJobById(Long id);
 
-    boolean updateJobById(Long id, Job updatedJob);
+    void updateJobById(Long id, Job updatedJob);
 }

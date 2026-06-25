@@ -40,21 +40,15 @@ public class JobController{
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteJobById(@PathVariable Long id){
-        boolean deleted = jobService.deleteJobById(id);
 
-        if(deleted)
-            return new ResponseEntity<>("Job deleted successfully", HttpStatus.OK);
-
-        return new ResponseEntity<>("Job with ID " + id + " not found", HttpStatus.NOT_FOUND);
+        jobService.deleteJobById(id);
+        return new ResponseEntity<>("Job deleted successfully", HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateJobById(@PathVariable Long id,@RequestBody Job updatedJob){
-        boolean isUpdated = jobService.updateJobById(id, updatedJob);
 
-        if(isUpdated)
-            return new ResponseEntity<>("Job updated successfully", HttpStatus.OK);
-
-        return new ResponseEntity<>("Job with ID " + id + " not found", HttpStatus.NOT_FOUND);
+        jobService.updateJobById(id, updatedJob);
+        return new ResponseEntity<>("Job updated successfully", HttpStatus.OK);
     }
 }

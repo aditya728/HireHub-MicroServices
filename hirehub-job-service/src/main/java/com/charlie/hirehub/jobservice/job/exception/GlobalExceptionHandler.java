@@ -57,4 +57,20 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
+
+    @ExceptionHandler(JobNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCompanyNotFound(
+            JobNotFoundException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
 }

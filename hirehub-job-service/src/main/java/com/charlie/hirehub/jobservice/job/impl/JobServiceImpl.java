@@ -5,6 +5,7 @@ import com.charlie.hirehub.jobservice.job.Job;
 import com.charlie.hirehub.jobservice.job.JobRepository;
 import com.charlie.hirehub.jobservice.job.JobService;
 import com.charlie.hirehub.jobservice.job.dto.JobDTO;
+import com.charlie.hirehub.jobservice.job.exception.JobNotFoundException;
 import com.charlie.hirehub.jobservice.job.external.Company;
 import com.charlie.hirehub.jobservice.job.external.Review;
 import com.charlie.hirehub.jobservice.job.integration.CompanyClientService;
@@ -67,40 +68,31 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public JobDTO getJobById(Long id) {
-        Job job = jobRepo.findById(id).orElse(null);
-        if(job == null){
-            return null;
-        }
+        Job job = jobRepo.findById(id)
+                .orElseThrow(() -> new JobNotFoundException("Job with id: " + id + " does not exist"));
+
         return convertToJobWithCompanyDto(job);
     }
 
     @Override
-    public boolean deleteJobById(Long id) {
-        if(jobRepo.existsById(id)){
-            jobRepo.deleteById(id);
-            return true;
-        }
-        return false;
+    public void deleteJobById(Long id) {
+        Job job = jobRepo.findById(id)
+                .orElseThrow(() -> new JobNotFoundException("Job with id: " + id + " does not exist"));
+        jobRepo.delete(job);
     }
 
     @Override
-    public boolean updateJobById(Long id, Job updatedJob) {
+    public void updateJobById(Long id, Job updatedJob) {
 
-        Optional<Job> optionalJob = jobRepo.findById(id);
+        Job oldJob = jobRepo.findById(id)
+                .orElseThrow(() -> new JobNotFoundException("Job with id: " + id + " does not exist"));
 
-        if (optionalJob.isPresent()) {
-            Job job = optionalJob.get();
+        oldJob.setTitle(updatedJob.getTitle());
+        oldJob.setDescription((updatedJob.getDescription()));
+        oldJob.setLocation(updatedJob.getLocation());
+        oldJob.setMinSalary(updatedJob.getMinSalary());
+        oldJob.setMaxSalary(updatedJob.getMaxSalary());
 
-            job.setTitle(updatedJob.getTitle());
-            job.setDescription((updatedJob.getDescription()));
-            job.setLocation(updatedJob.getLocation());
-            job.setMinSalary(updatedJob.getMinSalary());
-            job.setMaxSalary(updatedJob.getMaxSalary());
-
-            jobRepo.save(job);
-
-            return true;
-        }
-        return false;
+        jobRepo.save(oldJob);
     }
 }
