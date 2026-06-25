@@ -1,6 +1,7 @@
 package com.charlie.hirehub.jobservice.job;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -18,6 +19,7 @@ public class Job {
     private Integer maxSalary;
     private String location;
 
+    @NotNull(message = "Company Id is required")
     private Long companyId;
 
     /*

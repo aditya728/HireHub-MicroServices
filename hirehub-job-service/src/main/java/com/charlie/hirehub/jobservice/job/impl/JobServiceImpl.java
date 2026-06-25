@@ -10,7 +10,6 @@ import com.charlie.hirehub.jobservice.job.external.Review;
 import com.charlie.hirehub.jobservice.job.integration.CompanyClientService;
 import com.charlie.hirehub.jobservice.job.integration.ReviewClientService;
 import com.charlie.hirehub.jobservice.job.mapper.JobMapper;
-import feign.FeignException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -52,23 +51,17 @@ public class JobServiceImpl implements JobService {
 
         Long companyId = job.getCompanyId();
         if(companyId != null) {
-//            try {
                 company = companyClientService.getCompany(companyId);
-//            } catch (FeignException.NotFound e) {
-//                System.out.println("In catch block of JobServiceImpl.java");
-//                e.printStackTrace();
-//            }
-//            try{
+
                 reviews = reviewClientService.getReviews(companyId);
-//            }catch(FeignException.NotFound e) {
-//                e.printStackTrace();
-//            }
         }
         return JobMapper.mapToJobWithCompanyDTO(job, company, reviews);
     }
 
     @Override
     public void createJob(Job job) {
+        Long companyId = job.getCompanyId();
+        Company company = companyClientService.validateCompany(companyId);
         jobRepo.save(job);
     }
 

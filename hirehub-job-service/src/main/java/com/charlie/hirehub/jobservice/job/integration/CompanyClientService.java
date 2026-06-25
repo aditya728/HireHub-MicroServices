@@ -1,6 +1,8 @@
 package com.charlie.hirehub.jobservice.job.integration;
 
 import com.charlie.hirehub.jobservice.job.clients.CompanyClient;
+import com.charlie.hirehub.jobservice.job.exception.CompanyNotFoundException;
+import com.charlie.hirehub.jobservice.job.exception.CompanyServiceUnavailableException;
 import com.charlie.hirehub.jobservice.job.external.Company;
 import feign.FeignException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -34,5 +36,21 @@ public class CompanyClientService {
     public Company getCompanyRateLimiterFallback(Long companyId, RequestNotPermitted e){
         System.out.println("RATE LIMIT EXCEEDED");
         throw e;
+    }
+
+    @CircuitBreaker(name = "companyBreaker", fallbackMethod = "validateCompanyFallback")
+    @Retry(name = "companyRetry")
+    public Company validateCompany(Long companyId){
+        System.out.println("Calling Company Service to validate if Company exists");
+        return companyClient.getCompany(companyId);
+    }
+
+    public Company validateCompanyFallback(Long companyId, Exception e){
+        System.out.println("Validate Company Fallback");
+        if(e instanceof FeignException.NotFound){
+            throw new CompanyNotFoundException();
+        }
+
+        throw new CompanyServiceUnavailableException();
     }
 }

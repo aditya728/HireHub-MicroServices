@@ -1,6 +1,7 @@
 package com.charlie.hirehub.jobservice.job;
 
 import com.charlie.hirehub.jobservice.job.dto.JobDTO;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class JobController{
     }
 
     @PostMapping
-    public ResponseEntity<String> createJob(@RequestBody Job job){
+    public ResponseEntity<String> createJob(@Valid @RequestBody Job job){
         jobService.createJob(job);
         return new ResponseEntity<>("Job added successfully", HttpStatus.CREATED);
     }
