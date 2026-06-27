@@ -19,19 +19,15 @@ public class ReviewClientService {
         this.reviewClient = reviewClient;
     }
 
-    @Retry(name = "reviewRetry")
     @CircuitBreaker(name = "reviewBreaker", fallbackMethod = "getReviewsFallback")
+    @Retry(name = "reviewRetry")
     public List<Review> getReviews(Long companyId){
         System.out.println("Calling Review Service");
         return reviewClient.getReviews(companyId);
     }
 
     public List<Review> getReviewsFallback(Long companyId, Exception e) {
-        if(e instanceof FeignException.NotFound){
-            throw (FeignException.NotFound) e;
-        }
-
-        System.out.println("Review Service unavailable, returning empty reviews");
-        return Collections.emptyList();
+        System.out.println("Review unavailable, returning NULL, " + e.getClass());
+        return null;
     }
 }

@@ -1,9 +1,9 @@
 > Upcoming small fixes & upgrades
 
-1. AppConfig.java — Remove dead AppConfig/RestTemplate
-2. ReviewClientService annotation order is wrong, needs fix
-3. ReviewClientService rethrowing FeignException.NotFound from fallback but JobServiceImpl has no try-catch for it
-4. JobController — null check instead of exception
+1. AppConfig.java — Remove dead AppConfig/RestTemplate - DONE
+2. ReviewClientService annotation order is wrong, needs fix - DONE
+3. ReviewClientService rethrowing FeignException.NotFound from fallback but JobServiceImpl has no try-catch for it - DONE
+4. JobController — null check instead of exception - DONE
 5. deleteJobById and updateJobById in controller always return 200
 6. ApiResponse for Success requests
 7. Job entity — missing validation annotations like @NotNull @NotBlank

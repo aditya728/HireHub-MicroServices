@@ -12,7 +12,7 @@ import java.util.List;
 @RequestMapping("/jobs")
 public class JobController{
 
-    private JobService jobService;
+    private final JobService jobService;
 
     public JobController(JobService jobService) {
         this.jobService = jobService;
@@ -32,10 +32,7 @@ public class JobController{
     @GetMapping("/{id}")
     public ResponseEntity<JobDTO> getJobById(@PathVariable Long id){
         JobDTO jobWithCompany =  jobService.getJobById(id);
-        if(jobWithCompany != null){
-            return new ResponseEntity<>(jobWithCompany, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(jobWithCompany, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -46,7 +43,8 @@ public class JobController{
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateJobById(@PathVariable Long id,@RequestBody Job updatedJob){
+    public ResponseEntity<String> updateJobById(@PathVariable Long id,
+                                                @Valid @RequestBody Job updatedJob){
 
         jobService.updateJobById(id, updatedJob);
         return new ResponseEntity<>("Job updated successfully", HttpStatus.OK);

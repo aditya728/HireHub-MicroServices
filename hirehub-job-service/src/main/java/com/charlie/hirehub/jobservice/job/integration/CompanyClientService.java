@@ -20,7 +20,6 @@ public class CompanyClientService {
         this.companyClient = companyClient;
     }
 
-    @RateLimiter(name = "companyRateLimiter", fallbackMethod = "getCompanyRateLimiterFallback")
     @CircuitBreaker(name = "companyBreaker", fallbackMethod = "getCompanyFallback")
     @Retry(name = "companyRetry")
     public Company getCompany(Long companyId){
@@ -31,11 +30,6 @@ public class CompanyClientService {
     public Company getCompanyFallback(Long companyId, Exception e){
         System.out.println("Company unavailable, returning NULL, " + e.getClass());
         return null;
-    }
-
-    public Company getCompanyRateLimiterFallback(Long companyId, RequestNotPermitted e){
-        System.out.println("RATE LIMIT EXCEEDED");
-        throw e;
     }
 
     @CircuitBreaker(name = "companyBreaker", fallbackMethod = "validateCompanyFallback")
