@@ -1,5 +1,6 @@
 > Upcoming small fixes & upgrades
 
-1. Job entity — missing validation annotations like @NotNull @NotBlank
-2. Properties split between local and config server
-3. Have custom exceptions for Field validations
+1. Add logging in all the services
+2. Make DTOs for correct requests & responses for ALL the services
+3. Custom Exception handling for ALL the services
+4. Implement rate limiter, retry & circuit breaker for ALL the services

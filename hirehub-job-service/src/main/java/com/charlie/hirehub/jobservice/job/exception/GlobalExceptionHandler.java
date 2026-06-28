@@ -5,11 +5,14 @@ import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -59,7 +62,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(JobNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleCompanyNotFound(
+    public ResponseEntity<ErrorResponse> handleJobNotFound(
             JobNotFoundException ex,
             HttpServletRequest request) {
 
@@ -75,7 +78,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(TooManyRequestsException.class)
-    public ResponseEntity<ErrorResponse> handleCompanyNotFound(
+    public ResponseEntity<ErrorResponse> handleTooManyRequests(
             TooManyRequestsException ex,
             HttpServletRequest request) {
 
@@ -89,4 +92,31 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(error);
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(
+            MethodArgumentNotValidException ex,
+            HttpServletRequest request) {
+
+        Map<String, String> validationErrors = new HashMap<>();
+
+        ex.getBindingResult()
+                .getFieldErrors()
+                .forEach(error ->
+                        validationErrors.put(
+                                error.getField(),
+                                error.getDefaultMessage()));
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request",
+                "Validation failed.",
+                request.getRequestURI(),
+                validationErrors
+        );
+
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
 }
