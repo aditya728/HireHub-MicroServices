@@ -1,5 +1,7 @@
 package com.charlie.hirehub.companyservice.company;
 
+import com.charlie.hirehub.companyservice.company.dto.response.CompanyDTO;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,9 +35,9 @@ public class CompanyController{
     }
 
     @PostMapping
-    public ResponseEntity<String> createCompany(@RequestBody Company company){
-        companyService.createCompany(company);
-        return new ResponseEntity<>("Company created successfully", HttpStatus.CREATED);
+    public ResponseEntity<CompanyDTO> createCompany(@Valid @RequestBody Company company){
+        CompanyDTO companyDTO = companyService.createCompany(company);
+        return new ResponseEntity<>(companyDTO, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")

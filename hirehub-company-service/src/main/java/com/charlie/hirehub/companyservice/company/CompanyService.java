@@ -1,5 +1,7 @@
 package com.charlie.hirehub.companyservice.company;
 
+import com.charlie.hirehub.companyservice.company.dto.response.CompanyDTO;
+
 import java.util.List;
 
 public interface CompanyService {
@@ -8,7 +10,7 @@ public interface CompanyService {
 
     Company findCompanyById(Long id);
 
-    void createCompany(Company company);
+    CompanyDTO createCompany(Company company);
 
     boolean deleteCompanyById(Long id);
 
