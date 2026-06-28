@@ -1,4 +1,4 @@
-package com.charlie.hirehub.jobservice.job.dto;
+package com.charlie.hirehub.jobservice.job.dto.response;
 
 import com.charlie.hirehub.jobservice.job.external.Company;
 import com.charlie.hirehub.jobservice.job.external.Review;
@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class JobDTO {
+public class JobDetailsResponse {
 
     private Long id;
     private String title;

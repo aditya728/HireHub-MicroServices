@@ -19,7 +19,6 @@ public class Job {
     private Integer maxSalary;
     private String location;
 
-    @NotNull(message = "Company Id is required")
     private Long companyId;
 
     /*

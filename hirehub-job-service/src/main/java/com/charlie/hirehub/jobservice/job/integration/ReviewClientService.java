@@ -38,6 +38,6 @@ public class ReviewClientService {
         logger.warn("Review unavailable while fetching for company id {}. Returning degraded response.",
                 companyId);
 
-        return null;
+        return Collections.emptyList();
     }
 }

@@ -1,6 +1,9 @@
 package com.charlie.hirehub.jobservice.job;
 
-import com.charlie.hirehub.jobservice.job.dto.JobDTO;
+import com.charlie.hirehub.jobservice.job.dto.request.CreateJobRequest;
+import com.charlie.hirehub.jobservice.job.dto.request.UpdateJobRequest;
+import com.charlie.hirehub.jobservice.job.dto.response.JobCreatedResponse;
+import com.charlie.hirehub.jobservice.job.dto.response.JobDetailsResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,19 +22,19 @@ public class JobController{
     }
 
     @GetMapping
-    public ResponseEntity<List<JobDTO>> findAllJobs(){
+    public ResponseEntity<List<JobDetailsResponse>> findAllJobs(){
         return new ResponseEntity<>(jobService.findAllJobs(), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<String> createJob(@Valid @RequestBody Job job){
-        jobService.createJob(job);
-        return new ResponseEntity<>("Job added successfully", HttpStatus.CREATED);
+    public ResponseEntity<JobCreatedResponse> createJob(@Valid @RequestBody CreateJobRequest job){
+        JobCreatedResponse jobResponse = jobService.createJob(job);
+        return new ResponseEntity<>(jobResponse, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<JobDTO> getJobById(@PathVariable Long id){
-        JobDTO jobWithCompany =  jobService.getJobById(id);
+    public ResponseEntity<JobDetailsResponse> getJobById(@PathVariable Long id){
+        JobDetailsResponse jobWithCompany =  jobService.getJobById(id);
         return new ResponseEntity<>(jobWithCompany, HttpStatus.OK);
     }
 
@@ -43,10 +46,10 @@ public class JobController{
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateJobById(@PathVariable Long id,
-                                                @Valid @RequestBody Job updatedJob){
+    public ResponseEntity<Job> updateJobById(@PathVariable Long id,
+                                                @Valid @RequestBody UpdateJobRequest updatedJob){
 
-        jobService.updateJobById(id, updatedJob);
-        return new ResponseEntity<>("Job updated successfully", HttpStatus.OK);
+        Job job = jobService.updateJobById(id, updatedJob);
+        return new ResponseEntity<>(job, HttpStatus.OK);
     }
 }

@@ -1,18 +1,21 @@
 package com.charlie.hirehub.jobservice.job;
 
-import com.charlie.hirehub.jobservice.job.dto.JobDTO;
+import com.charlie.hirehub.jobservice.job.dto.request.CreateJobRequest;
+import com.charlie.hirehub.jobservice.job.dto.request.UpdateJobRequest;
+import com.charlie.hirehub.jobservice.job.dto.response.JobCreatedResponse;
+import com.charlie.hirehub.jobservice.job.dto.response.JobDetailsResponse;
 
 import java.util.List;
 
 public interface JobService {
 
-    List<JobDTO> findAllJobs();
+    List<JobDetailsResponse> findAllJobs();
 
-    void createJob(Job job);
+    JobCreatedResponse createJob(CreateJobRequest job);
 
-    JobDTO getJobById(Long id);
+    JobDetailsResponse getJobById(Long id);
 
     void deleteJobById(Long id);
 
-    void updateJobById(Long id, Job updatedJob);
+    Job updateJobById(Long id, UpdateJobRequest updatedJob);
 }
