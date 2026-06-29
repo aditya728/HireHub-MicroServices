@@ -12,7 +12,7 @@ public interface CompanyService {
 
     CompanyDTO createCompany(Company company);
 
-    boolean deleteCompanyById(Long id);
+    void deleteCompanyById(Long id);
 
     boolean updateCompanyById(Long id, Company updatedCompany);
 }

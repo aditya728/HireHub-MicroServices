@@ -26,12 +26,9 @@ public class CompanyController{
 
     @GetMapping("/{id}")
     public ResponseEntity<Company> findCompanyById(@PathVariable Long id){
-        Company company = companyService.findCompanyById(id);
 
-        if(company != null){
-            return new ResponseEntity<>(company, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        Company company = companyService.findCompanyById(id);
+        return new ResponseEntity<>(company, HttpStatus.OK);
     }
 
     @PostMapping
@@ -41,12 +38,10 @@ public class CompanyController{
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCompanyById(@PathVariable Long id){
-        boolean companyDeleted = companyService.deleteCompanyById(id);
+    public ResponseEntity<Void> deleteCompanyById(@PathVariable Long id){
 
-        if(companyDeleted)
-            return new ResponseEntity<>("Company deleted successfully", HttpStatus.OK);
-        return new ResponseEntity<>("Company with Id: "+ id + " not found", HttpStatus.NOT_FOUND);
+        companyService.deleteCompanyById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")

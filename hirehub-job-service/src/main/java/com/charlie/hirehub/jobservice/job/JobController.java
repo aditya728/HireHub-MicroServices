@@ -52,4 +52,11 @@ public class JobController{
         Job job = jobService.updateJobById(id, updatedJob);
         return new ResponseEntity<>(job, HttpStatus.OK);
     }
+
+    @GetMapping("/company/{companyId}/exists")
+    public ResponseEntity<Boolean> existsJobsByCompanyId(@PathVariable Long companyId){
+
+        Boolean jobExists = jobService.existsJobsByCompanyId(companyId);
+        return new ResponseEntity<>(jobExists, HttpStatus.OK);
+    }
 }

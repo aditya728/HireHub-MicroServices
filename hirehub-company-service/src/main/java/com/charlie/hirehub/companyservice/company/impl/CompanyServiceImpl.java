@@ -28,7 +28,7 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public List<Company> findAllCompanies() {
 
-        logger.debug("Fetching all Companies");
+        logger.info("Fetching all Companies");
 
         List<Company> companies = companyRepo.findAll();
 
@@ -40,11 +40,11 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public Company findCompanyById(Long id) {
 
-        logger.debug("Fetching Company with id: {}", id);
+        logger.info("Fetching Company with id: {}", id);
 
         Company company = companyRepo.findById(id).orElseThrow(() -> new CompanyNotFoundException("Company with id: " + id + " does not exist"));
 
-        logger.debug("Successfully fetched Company with id: {}", id);
+        logger.info("Successfully fetched Company with id: {}", id);
         return company;
     }
 
@@ -61,12 +61,14 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public boolean deleteCompanyById(Long id) {
-        if(companyRepo.existsById(id)){
-            companyRepo.deleteById(id);
-            return true;
-        }
-        return false;
+    public void deleteCompanyById(Long id) {
+
+        logger.info("Deleting company with id {}", id);
+
+        Company company = companyRepo.findById(id).orElseThrow(() -> new CompanyNotFoundException("Company with id " + id + " not found"));
+
+        //Search if company has jobs and reviews on for itself
+
     }
 
     @Override

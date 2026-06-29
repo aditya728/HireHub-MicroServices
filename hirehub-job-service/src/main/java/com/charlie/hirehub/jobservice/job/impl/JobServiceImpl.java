@@ -144,6 +144,21 @@ public class JobServiceImpl implements JobService {
         return jobRepo.save(oldJob);
     }
 
+    @Override
+    public boolean existsJobsByCompanyId(Long companyId) {
+
+        logger.info("Checking if job with company id {} exists", companyId);
+
+        boolean exists = jobRepo.existsByCompanyId(companyId);
+
+        if(exists)
+            logger.info("Jobs with company id {} exists", companyId);
+        else
+            logger.info("No jobs with company id {} exists", companyId);
+
+        return exists;
+    }
+
     //Fallback Methods:
     public JobCreatedResponse createJobRateLimiterFallback(CreateJobRequest job, RequestNotPermitted e) {
 

@@ -18,4 +18,6 @@ public interface JobService {
     void deleteJobById(Long id);
 
     Job updateJobById(Long id, UpdateJobRequest updatedJob);
+
+    boolean existsJobsByCompanyId(Long companyId);
 }
