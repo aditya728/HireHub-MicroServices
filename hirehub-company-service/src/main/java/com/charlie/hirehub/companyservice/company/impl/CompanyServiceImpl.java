@@ -5,7 +5,9 @@ import com.charlie.hirehub.companyservice.company.Company;
 import com.charlie.hirehub.companyservice.company.CompanyRepository;
 import com.charlie.hirehub.companyservice.company.CompanyService;
 import com.charlie.hirehub.companyservice.company.dto.response.CompanyDTO;
+import com.charlie.hirehub.companyservice.company.exception.CompanyHasDependencyException;
 import com.charlie.hirehub.companyservice.company.exception.CompanyNotFoundException;
+import com.charlie.hirehub.companyservice.company.integration.JobClientService;
 import com.charlie.hirehub.companyservice.company.mapper.CompanyMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,12 +19,15 @@ import java.util.List;
 public class CompanyServiceImpl implements CompanyService {
 
     CompanyRepository companyRepo;
+    JobClientService jobClientService;
+
 
     private static final Logger logger =
             LoggerFactory.getLogger(CompanyServiceImpl.class);
 
-    public CompanyServiceImpl(CompanyRepository companyRepo){
+    public CompanyServiceImpl(CompanyRepository companyRepo, JobClientService jobClientService){
         this.companyRepo = companyRepo;
+        this.jobClientService = jobClientService;
     }
 
     @Override
@@ -68,7 +73,14 @@ public class CompanyServiceImpl implements CompanyService {
         Company company = companyRepo.findById(id).orElseThrow(() -> new CompanyNotFoundException("Company with id " + id + " not found"));
 
         //Search if company has jobs and reviews on for itself
+        if(jobClientService.jobWithCompanyIdExists(id)){
+            logger.warn("Can't delete company with id {} because it has Jobs", id);
+            throw new CompanyHasDependencyException("Cannot delete company because Jobs exist for this company.");
+        }
 
+        companyRepo.delete(company);
+
+        logger.info("Successfully deleted company with id {}", id);
     }
 
     @Override

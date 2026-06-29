@@ -145,9 +145,10 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @RateLimiter(name = "readJobRateLimiter", fallbackMethod = "existsJobsByCompanyIdRateLimiterFallback")
     public boolean existsJobsByCompanyId(Long companyId) {
 
-        logger.info("Checking if job with company id {} exists", companyId);
+        logger.info("Checking if jobs exist for company id {}.", companyId);
 
         boolean exists = jobRepo.existsByCompanyId(companyId);
 
@@ -198,6 +199,14 @@ public class JobServiceImpl implements JobService {
 
         throw new TooManyRequestsException(
                 "Too many requests to update job. Please try again later.", e);
+    }
+
+    public boolean existsJobsByCompanyIdRateLimiterFallback(Long companyId, RequestNotPermitted e) {
+
+        logger.warn("Rate limit exceeded while checking jobs with company id {} exists.", companyId);
+
+        throw new TooManyRequestsException(
+                "Too many requests to check jobs with company id " + companyId + " exists.. Please try again later.", e);
     }
 
 }

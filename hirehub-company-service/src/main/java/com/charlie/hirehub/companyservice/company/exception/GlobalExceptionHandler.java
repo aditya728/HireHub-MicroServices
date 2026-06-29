@@ -55,4 +55,20 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(errorResponse);
     }
+
+    @ExceptionHandler(CompanyHasDependencyException.class)
+    public ResponseEntity<ErrorResponse> handleCompanyNotFound(
+            CompanyHasDependencyException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
 }

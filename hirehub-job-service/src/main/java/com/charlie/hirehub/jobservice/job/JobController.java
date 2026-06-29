@@ -56,7 +56,7 @@ public class JobController{
     @GetMapping("/company/{companyId}/exists")
     public ResponseEntity<Boolean> existsJobsByCompanyId(@PathVariable Long companyId){
 
-        Boolean jobExists = jobService.existsJobsByCompanyId(companyId);
+        boolean jobExists = jobService.existsJobsByCompanyId(companyId);
         return new ResponseEntity<>(jobExists, HttpStatus.OK);
     }
 }
