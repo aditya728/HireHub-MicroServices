@@ -1,8 +1,12 @@
 > Upcoming small fixes & upgrades
 
-1. Add logging in all the services
+0. Create Retry & CB in JobClientService in Company MS
+1. Create Retry & CB in ReviewClientService in Company MS
+2. RateLimiter for all APIs in Company MS
+
+1. Add logging in Review service
 2. Make DTOs for correct requests & responses for ALL the services
-3. Custom Exception handling for ALL the services
+3. Custom Exception handling for Review services
 4. Implement rate limiter, retry & circuit breaker for ALL the services
 
 > Create an
@@ -13,3 +17,6 @@ API GET /jobs?company=1
 
 >Add field validation for Company Service
 >Add field validation for Review Service
+Low Priority ->
+    > Create an endpoint GET /jobs?company=1
+    > Create an endpoint DELETE /jobs?company=1

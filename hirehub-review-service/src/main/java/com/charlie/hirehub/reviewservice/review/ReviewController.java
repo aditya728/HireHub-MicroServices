@@ -67,4 +67,9 @@ public class ReviewController{
         }
         return new ResponseEntity<>("Review Or Company Not found", HttpStatus.NOT_FOUND);
     }
+
+    @GetMapping("/company/{companyId}/exists")
+    public ResponseEntity<Boolean> reviewsExistsByCompanyId(@PathVariable Long companyId){
+        return new ResponseEntity<>(reviewService.reviewsExistsByCompanyId(companyId), HttpStatus.OK);
+    }
 }
