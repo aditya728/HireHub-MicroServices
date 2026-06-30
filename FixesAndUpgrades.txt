@@ -5,8 +5,11 @@
 3. Custom Exception handling for ALL the services
 4. Implement rate limiter, retry & circuit breaker for ALL the services
 
-> Create an endpoint GET /jobs?company=1
-> Create an endpoint DELETE /jobs?company=1
-> Create an endpoint GET /jobs/exists?company=1
+> Create an
+API GET /jobs?company=1
+> Create an API DELETE /jobs?company=1
 
-Create Retry & CB in JobClientService in Company MS
+> Create Retry & CB in JobClientService in Company MS
+
+>Add field validation for Company Service
+>Add field validation for Review Service
