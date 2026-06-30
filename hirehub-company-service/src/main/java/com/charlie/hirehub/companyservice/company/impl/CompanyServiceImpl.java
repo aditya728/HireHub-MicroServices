@@ -26,7 +26,6 @@ public class CompanyServiceImpl implements CompanyService {
     JobClientService jobClientService;
     ReviewClientService reviewClientService;
 
-
     private static final Logger logger =
             LoggerFactory.getLogger(CompanyServiceImpl.class);
 
