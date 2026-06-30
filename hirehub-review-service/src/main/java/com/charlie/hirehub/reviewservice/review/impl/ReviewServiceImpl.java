@@ -65,5 +65,10 @@ public class ReviewServiceImpl implements ReviewService {
         return false;
     }
 
+    @Override
+    public boolean reviewsExistsByCompanyId(Long companyId) {
+        return reviewRepo.existsByCompanyId(companyId);
+    }
+
 
 }

@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface ReviewRepository extends JpaRepository<Review, Long>{
 
     List<Review> findAllByCompanyId(Long companyId);
+
+    boolean existsByCompanyId(Long companyId);
 }

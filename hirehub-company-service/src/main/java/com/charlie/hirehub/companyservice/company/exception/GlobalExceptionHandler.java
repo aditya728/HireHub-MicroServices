@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CompanyHasDependencyException.class)
-    public ResponseEntity<ErrorResponse> handleCompanyNotFound(
+    public ResponseEntity<ErrorResponse> companyHasDependency(
             CompanyHasDependencyException ex,
             HttpServletRequest request) {
 
@@ -70,5 +70,21 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(JobServiceUnavailableException.class)
+    public ResponseEntity<ErrorResponse> jobServiceUnavailable(
+            JobServiceUnavailableException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
 }
