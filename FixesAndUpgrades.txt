@@ -1,6 +1,5 @@
 > Upcoming small fixes & upgrades
 
-0. Create Retry & CB in JobClientService in Company MS
 1. Create Retry & CB in ReviewClientService in Company MS
 2. RateLimiter for all APIs in Company MS
 
@@ -9,14 +8,9 @@
 3. Custom Exception handling for Review services
 4. Implement rate limiter, retry & circuit breaker for ALL the services
 
-> Create an
-API GET /jobs?company=1
-> Create an API DELETE /jobs?company=1
-
-> Create Retry & CB in JobClientService in Company MS
-
 >Add field validation for Company Service
 >Add field validation for Review Service
+
 Low Priority ->
     > Create an endpoint GET /jobs?company=1
     > Create an endpoint DELETE /jobs?company=1
