@@ -1,5 +1,7 @@
 package com.charlie.hirehub.reviewservice.review;
 
+import com.charlie.hirehub.reviewservice.review.dto.request.PostReviewRequest;
+import com.charlie.hirehub.reviewservice.review.dto.response.ReviewDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,17 +26,16 @@ public class ReviewController{
     }
 
     @GetMapping
-    public ResponseEntity<List<Review>> getAllReviewsForCompany(@RequestParam Long companyId){
-        List<Review> reviews = reviewService.getAllReviewsForCompany(companyId);
+    public ResponseEntity<List<ReviewDTO>> getAllReviewsForCompany(@RequestParam Long companyId){
+        List<ReviewDTO> reviews = reviewService.getAllReviewsForCompany(companyId);
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<String> postReviewForCompany(@RequestParam Long companyId, @RequestBody Review review){
-        boolean reviewPosted = reviewService.postReviewForCompany(companyId, review);
-        if(reviewPosted)
-            return new ResponseEntity<>("Review added successfully", HttpStatus.CREATED);
-        return new ResponseEntity<>("Review not added", HttpStatus.NOT_FOUND);
+    public ResponseEntity<ReviewDTO> postReviewForCompany(@RequestParam Long companyId, @RequestBody PostReviewRequest reviewRequest){
+
+        ReviewDTO reviewPosted = reviewService.postReviewForCompany(companyId, reviewRequest);
+        return new ResponseEntity<>(reviewPosted, HttpStatus.CREATED);
     }
 
     @GetMapping("/{reviewId}")

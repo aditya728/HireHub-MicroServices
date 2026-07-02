@@ -1,14 +1,16 @@
 package com.charlie.hirehub.reviewservice.review;
 
+import com.charlie.hirehub.reviewservice.review.dto.request.PostReviewRequest;
+import com.charlie.hirehub.reviewservice.review.dto.response.ReviewDTO;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
 public interface ReviewService {
 
-    List<Review> getAllReviewsForCompany(Long companyId);
+    List<ReviewDTO> getAllReviewsForCompany(Long companyId);
 
-    boolean postReviewForCompany(Long companyId, Review review);
+    ReviewDTO postReviewForCompany(Long companyId, PostReviewRequest reviewRequest);
 
     Review getReviewById(Long reviewId);
 
