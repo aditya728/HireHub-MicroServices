@@ -1,5 +1,7 @@
 package com.charlie.hirehub.companyservice.company;
 
+import com.charlie.hirehub.companyservice.company.dto.request.CreateCompanyRequest;
+import com.charlie.hirehub.companyservice.company.dto.request.UpdateCompanyRequest;
 import com.charlie.hirehub.companyservice.company.dto.response.CompanyDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -19,21 +21,21 @@ public class CompanyController{
     }
 
     @GetMapping
-    public ResponseEntity<List<Company>> findAllCompanies(){
-        List<Company> companies = companyService.findAllCompanies();
+    public ResponseEntity<List<CompanyDTO>> findAllCompanies(){
+        List<CompanyDTO> companies = companyService.findAllCompanies();
         return new ResponseEntity<>(companies, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Company> findCompanyById(@PathVariable Long id){
+    public ResponseEntity<CompanyDTO> findCompanyById(@PathVariable Long id){
 
-        Company company = companyService.findCompanyById(id);
+        CompanyDTO company = companyService.findCompanyById(id);
         return new ResponseEntity<>(company, HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<CompanyDTO> createCompany(@Valid @RequestBody Company company){
-        CompanyDTO companyDTO = companyService.createCompany(company);
+    public ResponseEntity<CompanyDTO> createCompany(@Valid @RequestBody CreateCompanyRequest companyRequest){
+        CompanyDTO companyDTO = companyService.createCompany(companyRequest);
         return new ResponseEntity<>(companyDTO, HttpStatus.CREATED);
     }
 
@@ -45,11 +47,9 @@ public class CompanyController{
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateCompanyById(@PathVariable Long id, @RequestBody Company updatedCompany){
-        boolean companyUpdated = companyService.updateCompanyById(id, updatedCompany);
+    public ResponseEntity<String> updateCompanyById(@PathVariable Long id, @RequestBody UpdateCompanyRequest updateCompanyRequest){
 
-        if(companyUpdated)
-            return new ResponseEntity<>("Company updated successfully", HttpStatus.OK);
-        return new ResponseEntity<>("Company with Id: "+ id + " not found", HttpStatus.NOT_FOUND);
+        CompanyDTO companyUpdated = companyService.updateCompanyById(id, updateCompanyRequest);
+        return new ResponseEntity<>("Company updated successfully", HttpStatus.OK);
     }
 }

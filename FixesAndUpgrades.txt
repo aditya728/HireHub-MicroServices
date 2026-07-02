@@ -1,15 +1,14 @@
-> Upcoming small fixes & upgrades
+>>>>> Upcoming small fixes & upgrades <<<<<
+-------------------------------------------
 
-1. Create Retry & CB in ReviewClientService in Company MS
-2. RateLimiter for all APIs in Company MS
+> Make DTOs for correct requests & responses for Company services
+>Add field validation for Company Service
 
 1. Add logging in Review service
-2. Make DTOs for correct requests & responses for ALL the services
-3. Custom Exception handling for Review services
-4. Implement rate limiter, retry & circuit breaker for ALL the services
-
->Add field validation for Company Service
->Add field validation for Review Service
+2. Custom Exception handling for Review service
+3. Implement rate limiter, retry & circuit breaker for Review service
+4. Make DTOs for correct requests & responses for Review services
+    >Add field validation for Review Service
 
 Low Priority ->
     > Create an endpoint GET /jobs?company=1

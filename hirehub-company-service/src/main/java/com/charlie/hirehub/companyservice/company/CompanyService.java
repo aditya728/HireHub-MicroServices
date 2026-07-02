@@ -1,18 +1,20 @@
 package com.charlie.hirehub.companyservice.company;
 
+import com.charlie.hirehub.companyservice.company.dto.request.CreateCompanyRequest;
+import com.charlie.hirehub.companyservice.company.dto.request.UpdateCompanyRequest;
 import com.charlie.hirehub.companyservice.company.dto.response.CompanyDTO;
 
 import java.util.List;
 
 public interface CompanyService {
 
-    List<Company> findAllCompanies();
+    List<CompanyDTO> findAllCompanies();
 
-    Company findCompanyById(Long id);
+    CompanyDTO findCompanyById(Long id);
 
-    CompanyDTO createCompany(Company company);
+    CompanyDTO createCompany(CreateCompanyRequest companyRequest);
 
     void deleteCompanyById(Long id);
 
-    boolean updateCompanyById(Long id, Company updatedCompany);
+    CompanyDTO updateCompanyById(Long id, UpdateCompanyRequest updateCompanyRequest);
 }

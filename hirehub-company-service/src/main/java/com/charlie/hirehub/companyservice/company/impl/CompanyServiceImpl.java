@@ -4,6 +4,8 @@ package com.charlie.hirehub.companyservice.company.impl;
 import com.charlie.hirehub.companyservice.company.Company;
 import com.charlie.hirehub.companyservice.company.CompanyRepository;
 import com.charlie.hirehub.companyservice.company.CompanyService;
+import com.charlie.hirehub.companyservice.company.dto.request.CreateCompanyRequest;
+import com.charlie.hirehub.companyservice.company.dto.request.UpdateCompanyRequest;
 import com.charlie.hirehub.companyservice.company.dto.response.CompanyDTO;
 import com.charlie.hirehub.companyservice.company.exception.CompanyHasDependencyException;
 import com.charlie.hirehub.companyservice.company.exception.CompanyNotFoundException;
@@ -22,9 +24,9 @@ import java.util.List;
 @Service
 public class CompanyServiceImpl implements CompanyService {
 
-    CompanyRepository companyRepo;
-    JobClientService jobClientService;
-    ReviewClientService reviewClientService;
+    private final CompanyRepository companyRepo;
+    private final JobClientService jobClientService;
+    private final ReviewClientService reviewClientService;
 
     private static final Logger logger =
             LoggerFactory.getLogger(CompanyServiceImpl.class);
@@ -36,33 +38,41 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public List<Company> findAllCompanies() {
+    @RateLimiter(name = "readCompanyRateLimiter", fallbackMethod = "findAllCompaniesRateLimitFallback")
+    public List<CompanyDTO> findAllCompanies() {
 
         logger.info("Fetching all Companies");
 
         List<Company> companies = companyRepo.findAll();
 
-        logger.info("Successfully fetched {} companies", companies.size());
+        List<CompanyDTO> companyDTOs = companies.stream()
+                .map(CompanyMapper::toCompanyDTO)
+                .toList();
 
-        return companies;
+        logger.info("Fetched {} companies successfully", companyDTOs.size());
+
+        return companyDTOs;
     }
 
     @Override
-    public Company findCompanyById(Long id) {
+    @RateLimiter(name = "readCompanyRateLimiter", fallbackMethod = "findCompanyByIdRateLimitFallback")
+    public CompanyDTO findCompanyById(Long id) {
 
-        logger.info("Fetching Company with id: {}", id);
+        logger.info("Fetching company with id: {}", id);
 
         Company company = companyRepo.findById(id).orElseThrow(() -> new CompanyNotFoundException("Company with id: " + id + " does not exist"));
 
-        logger.info("Successfully fetched Company with id: {}", id);
-        return company;
+        logger.info("Successfully fetched company with id: {}", id);
+        return CompanyMapper.toCompanyDTO(company);
     }
 
     @Override
-    public CompanyDTO createCompany(Company company) {
+    @RateLimiter(name = "writeCompanyRateLimiter", fallbackMethod = "createCompanyRateLimitFallback")
+    public CompanyDTO createCompany(CreateCompanyRequest companyRequest) {
 
-        logger.info("Creating a Company with name: {}", company.getName());
+        logger.info("Creating a company with name: {}", companyRequest.getName());
 
+        Company company = CompanyMapper.toCompany(companyRequest);
         Company savedCompany = companyRepo.save(company);
 
         logger.info("Successfully created {} company", savedCompany.getName());
@@ -97,33 +107,64 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public boolean updateCompanyById(Long id, Company updatedCompany) {
+    @RateLimiter(name = "writeCompanyRateLimiter", fallbackMethod = "updateCompanyByIdRateLimitFallback")
+    public CompanyDTO updateCompanyById(Long id, UpdateCompanyRequest updateCompanyRequest) {
 
         logger.info("Updating company with id {}", id);
+
+        Company updatedCompany = CompanyMapper.toCompany(updateCompanyRequest);
 
         Company currentCompany = companyRepo.findById(id)
                 .orElseThrow(() -> new CompanyNotFoundException("Company with id " + id +" not found"));
 
-        if(currentCompany != null){
-            currentCompany.setName(updatedCompany.getName());
-            currentCompany.setDescription(updatedCompany.getDescription());
+        currentCompany.setName(updatedCompany.getName());
+        currentCompany.setDescription(updatedCompany.getDescription());
+        Company savedUpdatedCompany = companyRepo.save(currentCompany);
 
-            companyRepo.save(currentCompany);
+        logger.info("Successfully updated company with id {}", id);
 
-            logger.info("Successfully updated company with id {}", id);
-
-            return true;
-        }
-
-        logger.warn("Failed to update company with id {}", id);
-        return false;
+        return CompanyMapper.toCompanyDTO(savedUpdatedCompany);
     }
+
+    //Fallback Methods
 
     public void deleteCompanyByIdRateLimitFallback(Long companyId, RequestNotPermitted e){
 
-        logger.warn("Rate Limit Exceeded while deleting Company");
+        logger.warn("Rate Limit Exceeded... while deleting company with id {}", companyId);
 
         throw new TooManyRequestsException(
                 "Too many requests to delete Company. Please try again later.", e);
+    }
+
+    public CompanyDTO createCompanyRateLimitFallback(CreateCompanyRequest companyRequest, RequestNotPermitted e){
+
+        logger.warn("Rate Limit Exceeded... while creating '{}' company", companyRequest.getName());
+
+        throw new TooManyRequestsException(
+                "Too many requests to create Company. Please try again later.", e);
+    }
+
+    public List<CompanyDTO> findAllCompaniesRateLimitFallback(RequestNotPermitted e){
+
+        logger.warn("Rate Limit Exceeded... while finding all companies");
+
+        throw new TooManyRequestsException(
+                "Too many requests to find Companies. Please try again later.", e);
+    }
+
+    public CompanyDTO findCompanyByIdRateLimitFallback(Long id, RequestNotPermitted e){
+
+        logger.warn("Rate Limit Exceeded... while finding company with id {}", id);
+
+        throw new TooManyRequestsException(
+                "Too many requests to find Company by ID. Please try again later.", e);
+    }
+
+    public CompanyDTO updateCompanyByIdRateLimitFallback(Long id, UpdateCompanyRequest updateCompanyRequest, RequestNotPermitted e){
+
+        logger.warn("Rate Limit Exceeded... while updating company with id {}", id);
+
+        throw new TooManyRequestsException(
+                "Too many requests to update Company. Please try again later.", e);
     }
 }
