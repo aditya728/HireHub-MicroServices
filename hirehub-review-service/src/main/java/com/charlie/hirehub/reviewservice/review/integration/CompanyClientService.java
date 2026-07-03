@@ -1,14 +1,17 @@
 package com.charlie.hirehub.reviewservice.review.integration;
 
 import com.charlie.hirehub.reviewservice.review.client.CompanyClient;
-import com.charlie.hirehub.reviewservice.review.exceptionHandling.CompanyNotFoundException;
-import com.charlie.hirehub.reviewservice.review.exceptionHandling.CompanyServiceUnavailableException;
+import com.charlie.hirehub.reviewservice.review.exception.CompanyNotFoundException;
+import com.charlie.hirehub.reviewservice.review.exception.CompanyServiceUnavailableException;
 import com.charlie.hirehub.reviewservice.review.external.Company;
-import com.charlie.hirehub.reviewservice.review.impl.ReviewServiceImpl;
 import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CompanyClientService {
 
     private final CompanyClient companyClient;
@@ -20,6 +23,8 @@ public class CompanyClientService {
         this.companyClient = companyClient;
     }
 
+    @CircuitBreaker(name = "companyBreaker", fallbackMethod = "validateCompanyFallback")
+    @Retry(name = "companyRetry")
     public Company validateCompany(Long companyId){
 
         logger.debug("Validating company with id {}.", companyId);

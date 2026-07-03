@@ -1,4 +1,4 @@
-package com.charlie.hirehub.reviewservice.review.exceptionHandling;
+package com.charlie.hirehub.reviewservice.review.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

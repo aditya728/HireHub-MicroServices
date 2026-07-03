@@ -1,6 +1,7 @@
 package com.charlie.hirehub.reviewservice.review;
 
 import com.charlie.hirehub.reviewservice.review.dto.request.PostReviewRequest;
+import com.charlie.hirehub.reviewservice.review.dto.request.UpdateReviewRequest;
 import com.charlie.hirehub.reviewservice.review.dto.response.ReviewDTO;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -12,11 +13,11 @@ public interface ReviewService {
 
     ReviewDTO postReviewForCompany(Long companyId, PostReviewRequest reviewRequest);
 
-    Review getReviewById(Long reviewId);
+    ReviewDTO getReviewById(Long reviewId);
 
-    boolean updateReviewById(Long reviewId, Review review);
+    ReviewDTO updateReviewById(Long reviewId, UpdateReviewRequest updateReviewRequest);
 
-    boolean deleteReviewById(Long reviewId);
+    void deleteReviewById(Long reviewId);
 
     boolean reviewsExistsByCompanyId(Long companyId);
 }

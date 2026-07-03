@@ -4,16 +4,20 @@ import com.charlie.hirehub.reviewservice.review.Review;
 import com.charlie.hirehub.reviewservice.review.ReviewRepository;
 import com.charlie.hirehub.reviewservice.review.ReviewService;
 import com.charlie.hirehub.reviewservice.review.dto.request.PostReviewRequest;
+import com.charlie.hirehub.reviewservice.review.dto.request.UpdateReviewRequest;
 import com.charlie.hirehub.reviewservice.review.dto.response.ReviewDTO;
+import com.charlie.hirehub.reviewservice.review.exception.ReviewNotFoundException;
+import com.charlie.hirehub.reviewservice.review.exception.TooManyRequestsException;
 import com.charlie.hirehub.reviewservice.review.external.Company;
 import com.charlie.hirehub.reviewservice.review.integration.CompanyClientService;
 import com.charlie.hirehub.reviewservice.review.mapper.ReviewMapper;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
@@ -29,6 +33,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @RateLimiter(name = "readReviewRateLimiter", fallbackMethod = "getAllReviewsForCompanyRateLimitFallback")
     public List<ReviewDTO> getAllReviewsForCompany(Long companyId) {
 
         logger.info("Fetching all reviews for company with id {}", companyId);
@@ -44,6 +49,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @RateLimiter(name = "writeReviewRateLimiter", fallbackMethod = "postReviewForCompanyRateLimitFallback")
     public ReviewDTO postReviewForCompany(Long companyId, PostReviewRequest reviewRequest) {
 
         logger.info("Posting a review for company with id {}", companyId);
@@ -61,41 +67,130 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Review getReviewById( Long reviewId) {
-        return reviewRepo.findById(reviewId).orElse(null);
+    @RateLimiter(name = "readReviewRateLimiter", fallbackMethod = "getReviewByIdRateLimitFallback")
+    public ReviewDTO getReviewById(Long reviewId) {
+
+        logger.info("Fetching a review with id {}", reviewId);
+
+        Review review = reviewRepo.findById(reviewId)
+                .orElseThrow(() -> new ReviewNotFoundException("Review with id " + reviewId + " not found"));
+
+        logger.info("Successfully fetched a review with id {}", reviewId);
+
+        return ReviewMapper.toReviewDTO(review);
     }
 
     @Override
-    public boolean updateReviewById(Long reviewId, Review updatedReview) {
-        Review currentReview = reviewRepo.findById(reviewId).orElse(null);
+    @RateLimiter(name = "writeReviewRateLimiter", fallbackMethod = "updateReviewByIdRateLimitFallback")
+    public ReviewDTO updateReviewById(Long reviewId, UpdateReviewRequest updatedReview) {
 
-        if(currentReview != null){
-            currentReview.setTitle(updatedReview.getTitle());
-            currentReview.setReviewDescription(updatedReview.getReviewDescription());
-            currentReview.setRating(updatedReview.getRating());
-            currentReview.setCompanyId(updatedReview.getCompanyId());
+        logger.info("Updating a review with id {}", reviewId);
 
-            reviewRepo.save(currentReview);
-            return true;
-        }
-        return false;
+        Review currentReview = reviewRepo.findById(reviewId)
+                .orElseThrow(() -> new ReviewNotFoundException("Review with id " + reviewId + " not found"));
+
+        currentReview.setTitle(updatedReview.getTitle());
+        currentReview.setReviewDescription(updatedReview.getReviewDescription());
+        currentReview.setRating(updatedReview.getRating());
+
+        Review savedReview = reviewRepo.save(currentReview);
+
+        logger.info("Successfully updated review with id {}", reviewId);
+
+        return ReviewMapper.toReviewDTO(savedReview);
     }
 
     @Override
-    public boolean deleteReviewById(Long reviewId) {
-        Review review = reviewRepo.findById(reviewId).orElse(null);
+    @RateLimiter(name = "writeReviewRateLimiter", fallbackMethod = "deleteReviewByIdRateLimitFallback")
+    public void deleteReviewById(Long reviewId) {
 
-        if(review != null){
-            reviewRepo.delete(review);
-            return true;
-        }
-        return false;
+        logger.info("Deleting review with id {}", reviewId);
+
+        Review review = reviewRepo.findById(reviewId)
+                .orElseThrow(() -> new ReviewNotFoundException("Review with id " + reviewId + " not found"));
+
+        reviewRepo.delete(review);
+
+        logger.info("Review with id {} deleted successfully", reviewId);
     }
 
     @Override
+    @RateLimiter(name = "readReviewRateLimiter", fallbackMethod = "reviewsExistsByCompanyIdRateLimitFallback")
     public boolean reviewsExistsByCompanyId(Long companyId) {
-        return reviewRepo.existsByCompanyId(companyId);
+
+        logger.info("Checking if reviews exist for company with id {}", companyId);
+
+        boolean exists = reviewRepo.existsByCompanyId(companyId);
+
+        if (exists) {
+            logger.info("Reviews exist for company with id {}", companyId);
+        } else {
+            logger.info("No reviews exist for company with id {}", companyId);
+        }
+        return exists;
     }
 
+    // Fallback Methods
 
+    public List<ReviewDTO> getAllReviewsForCompanyRateLimitFallback(
+            Long companyId,
+            RequestNotPermitted e) {
+
+        logger.warn("Rate limit exceeded while fetching reviews for company with id {}", companyId);
+
+        throw new TooManyRequestsException(
+                "Too many requests to fetch reviews. Please try again later.", e);
+    }
+
+    public ReviewDTO postReviewForCompanyRateLimitFallback(
+            Long companyId,
+            PostReviewRequest reviewRequest,
+            RequestNotPermitted e) {
+
+        logger.warn("Rate limit exceeded while posting review for company with id {}", companyId);
+
+        throw new TooManyRequestsException(
+                "Too many requests to post review. Please try again later.", e);
+    }
+
+    public ReviewDTO getReviewByIdRateLimitFallback(
+            Long reviewId,
+            RequestNotPermitted e) {
+
+        logger.warn("Rate limit exceeded while fetching review with id {}", reviewId);
+
+        throw new TooManyRequestsException(
+                "Too many requests to fetch review. Please try again later.", e);
+    }
+
+    public ReviewDTO updateReviewByIdRateLimitFallback(
+            Long reviewId,
+            UpdateReviewRequest updatedReview,
+            RequestNotPermitted e) {
+
+        logger.warn("Rate limit exceeded while updating review with id {}", reviewId);
+
+        throw new TooManyRequestsException(
+                "Too many requests to update review. Please try again later.", e);
+    }
+
+    public void deleteReviewByIdRateLimitFallback(
+            Long reviewId,
+            RequestNotPermitted e) {
+
+        logger.warn("Rate limit exceeded while deleting review with id {}", reviewId);
+
+        throw new TooManyRequestsException(
+                "Too many requests to delete review. Please try again later.", e);
+    }
+
+    public boolean reviewsExistsByCompanyIdRateLimitFallback(
+            Long companyId,
+            RequestNotPermitted e) {
+
+        logger.warn("Rate limit exceeded while checking reviews for company with id {}", companyId);
+
+        throw new TooManyRequestsException(
+                "Too many requests to check reviews. Please try again later.", e);
+    }
 }

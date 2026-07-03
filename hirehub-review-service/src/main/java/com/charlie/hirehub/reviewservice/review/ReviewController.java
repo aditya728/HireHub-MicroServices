@@ -1,6 +1,7 @@
 package com.charlie.hirehub.reviewservice.review;
 
 import com.charlie.hirehub.reviewservice.review.dto.request.PostReviewRequest;
+import com.charlie.hirehub.reviewservice.review.dto.request.UpdateReviewRequest;
 import com.charlie.hirehub.reviewservice.review.dto.response.ReviewDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,34 +40,25 @@ public class ReviewController{
     }
 
     @GetMapping("/{reviewId}")
-    public ResponseEntity<Review> getReviewById( @PathVariable Long reviewId){
-        Review review = reviewService.getReviewById(reviewId);
+    public ResponseEntity<ReviewDTO> getReviewById( @PathVariable Long reviewId){
 
-        if(review != null){
-            return new ResponseEntity<>(review, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        ReviewDTO review = reviewService.getReviewById(reviewId);
+        return new ResponseEntity<>(review, HttpStatus.OK);
     }
 
     @PutMapping("/{reviewId}")
-    public ResponseEntity<String> updateReviewById(@PathVariable Long reviewId,
-                                    @RequestBody Review review){
-        boolean reviewUpdated = reviewService.updateReviewById(reviewId, review);
+    public ResponseEntity<ReviewDTO> updateReviewById(@PathVariable Long reviewId,
+                                    @RequestBody UpdateReviewRequest updateReviewRequest){
 
-        if(reviewUpdated){
-            return new ResponseEntity<>("Review updated successfully", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("Review Not found", HttpStatus.NOT_FOUND);
+        ReviewDTO reviewUpdated = reviewService.updateReviewById(reviewId, updateReviewRequest);
+        return new ResponseEntity<>(reviewUpdated, HttpStatus.OK);
     }
 
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<String> deleteReviewById(@PathVariable Long reviewId){
-        boolean reviewDeleted = reviewService.deleteReviewById(reviewId);
+    public ResponseEntity<Void> deleteReviewById(@PathVariable Long reviewId){
 
-        if(reviewDeleted){
-            return new ResponseEntity<>("Review deleted successfully", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("Review Or Company Not found", HttpStatus.NOT_FOUND);
+        reviewService.deleteReviewById(reviewId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/company/{companyId}/exists")

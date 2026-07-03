@@ -1,4 +1,4 @@
-package com.charlie.hirehub.reviewservice.review.exceptionHandling;
+package com.charlie.hirehub.reviewservice.review.exception;
 
 import feign.FeignException;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;

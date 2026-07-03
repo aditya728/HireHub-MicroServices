@@ -2,6 +2,7 @@ package com.charlie.hirehub.reviewservice.review.mapper;
 
 import com.charlie.hirehub.reviewservice.review.Review;
 import com.charlie.hirehub.reviewservice.review.dto.request.PostReviewRequest;
+import com.charlie.hirehub.reviewservice.review.dto.request.UpdateReviewRequest;
 import com.charlie.hirehub.reviewservice.review.dto.response.ReviewDTO;
 
 public class ReviewMapper {
@@ -20,6 +21,17 @@ public class ReviewMapper {
     }
 
     public static Review toReview(PostReviewRequest reviewRequest) {
+
+        Review review = new Review();
+
+        review.setTitle(reviewRequest.getTitle());
+        review.setReviewDescription(reviewRequest.getReviewDescription());
+        review.setRating(reviewRequest.getRating());
+
+        return review;
+    }
+
+    public static Review toReview(UpdateReviewRequest reviewRequest) {
 
         Review review = new Review();
 
