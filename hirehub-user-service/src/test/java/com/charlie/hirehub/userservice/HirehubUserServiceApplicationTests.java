@@ -1,0 +1,13 @@
+package com.charlie.hirehub.userservice;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class HirehubUserServiceApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
