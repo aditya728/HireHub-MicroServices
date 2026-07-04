@@ -1,15 +1,115 @@
 >>>>> Upcoming small fixes & upgrades <<<<<
 -------------------------------------------
 
-> Make DTOs for correct requests & responses for Company services
->Add field validation for Company Service
-
-1. Add logging in Review service
-2. Custom Exception handling for Review service
-3. Implement rate limiter, retry & circuit breaker for Review service
-4. Make DTOs for correct requests & responses for Review services
-    >Add field validation for Review Service
+> Entity columns validation
 
 Low Priority ->
     > Create an endpoint GET /jobs?company=1
     > Create an endpoint DELETE /jobs?company=1
+
+
+>>>>> Upcoming USER-SERVICE Roadmap <<<<<
+-------------------------------------------
+
+Phase 1 - Setup
+Create User Service
+Register with Eureka
+Connect with API Gateway
+Configure Database
+Create User Entity
+Create Role Enum (ADMIN, RECRUITER, JOB_SEEKER)
+Layered Architecture (Controller, Service, Repository)
+
+Phase 2 - User CRUD
+Endpoints
+POST   /users/register
+GET    /users/{id}
+GET    /users
+PUT    /users/{id}
+DELETE /users/{id}
+
+Business Validation
+Email must be unique
+User must exist before update/delete
+Proper exception handling
+Input Validation
+Name required
+Valid email
+Password length
+Role validation
+
+Phase 3 - Spring Security + JWT
+Authentication
+POST /users/login
+
+Flow:
+-----
+Login
+↓
+Verify Email
+↓
+Verify Password
+↓
+Generate JWT
+↓
+Return Token
+
+Implement:
+----------
+Spring Security
+Security Filter Chain
+Password Encoding (BCrypt)
+JWT Generation
+JWT Validation
+JWT Filter
+Authentication Entry Point
+
+Phase 4 - Authorization
+Roles
+ADMIN:
+Full access
+
+RECRUITER:
+Create Company
+Create Job
+Update Job
+Delete Own Job
+
+JOB_SEEKER:
+View Jobs
+Add Reviews
+
+Secure endpoints using role-based authorization.
+
+Phase 5 - Integrate with Existing Services
+
+Restrict APIs.
+Examples
+
+POST /companies
+→ Recruiter/Admin only
+
+POST /jobs
+→ Recruiter/Admin only
+
+DELETE /jobs
+→ Recruiter/Admin only
+
+POST /reviews
+→ Job Seeker only
+
+Phase 6 - Production Improvements
+DTOs
+Global Exception Handling
+SLF4J Logging
+Bean Validation
+Consistent Error Response
+Proper HTTP Status Codes
+(Most of these you've already implemented, so just reuse them.)
+
+Phase 7 - Optional (Only if time permits)
+Update Password
+Change Password
+Get Logged-in User Profile (/users/me)
+Soft Delete
+Swagger Documentation
