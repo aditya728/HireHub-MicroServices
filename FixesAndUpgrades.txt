@@ -17,7 +17,7 @@ Register with Eureka
 Connect with API Gateway
 Configure Database
 Create User Entity
-Create Role Enum (ADMIN, RECRUITER, JOB_SEEKER)
+Create Role Enum (ADMIN, RECRUITER, CANDIDATE)
 Layered Architecture (Controller, Service, Repository)
 
 Phase 2 - User CRUD
