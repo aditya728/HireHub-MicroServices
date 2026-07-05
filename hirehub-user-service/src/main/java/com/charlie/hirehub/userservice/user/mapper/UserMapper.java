@@ -2,6 +2,7 @@ package com.charlie.hirehub.userservice.user.mapper;
 
 import com.charlie.hirehub.userservice.user.User;
 import com.charlie.hirehub.userservice.user.dto.request.RegisterUserRequest;
+import com.charlie.hirehub.userservice.user.dto.request.UpdateUserRequest;
 import com.charlie.hirehub.userservice.user.dto.response.UserDTO;
 
 public class UserMapper {

@@ -4,13 +4,17 @@ import com.charlie.hirehub.userservice.user.User;
 import com.charlie.hirehub.userservice.user.UserRepository;
 import com.charlie.hirehub.userservice.user.UserService;
 import com.charlie.hirehub.userservice.user.dto.request.RegisterUserRequest;
+import com.charlie.hirehub.userservice.user.dto.request.UpdateUserRequest;
 import com.charlie.hirehub.userservice.user.dto.response.UserDTO;
 import com.charlie.hirehub.userservice.user.exception.UserAlreadyExistsException;
+import com.charlie.hirehub.userservice.user.exception.UserNotFoundException;
 import com.charlie.hirehub.userservice.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -40,5 +44,76 @@ public class UserServiceImpl implements UserService {
                 savedUser.getId(), userEmail);
 
         return UserMapper.toUserDTO(savedUser);
+    }
+
+    @Override
+    public UserDTO getUserById(Long id) {
+
+        logger.info("Fetching user with id {}", id);
+
+        User user = userRepo.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
+
+        logger.info("Successfully fetched user with id {} ", id);
+
+        return UserMapper.toUserDTO(user);
+    }
+
+    @Override
+    public List<UserDTO> getAllUsers() {
+
+        logger.info("Fetching all users");
+
+        List<UserDTO> users = userRepo.findAll()
+                .stream()
+                .map(UserMapper::toUserDTO)
+                .toList();
+
+        logger.info("Successfully fetched {} users", users.size());
+
+        return users;
+    }
+
+    @Override
+    public UserDTO updateUser(Long id, UpdateUserRequest request) {
+
+        logger.info("Updating user with id {}", id);
+
+        User user = userRepo.findById(id)
+                .orElseThrow(() ->
+                        new UserNotFoundException("User with id " + id + " not found."));
+
+        if (!user.getEmail().equals(request.getEmail())
+                && userRepo.existsByEmail(request.getEmail())) {
+
+            logger.warn("User with email {} already exists", request.getEmail());
+
+            throw new UserAlreadyExistsException(
+                    "User with email " + request.getEmail() + " already exists.");
+        }
+
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setRole(request.getRole());
+
+        User updatedUser = userRepo.save(user);
+
+        logger.info("Successfully updated user with id {}", id);
+
+        return UserMapper.toUserDTO(updatedUser);
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+
+        logger.info("Deleting user with id {}", id);
+
+        User user = userRepo.findById(id)
+                .orElseThrow(() ->
+                        new UserNotFoundException("User with id " + id + " not found."));
+
+        userRepo.delete(user);
+
+        logger.info("Successfully deleted user with id {}", id);
     }
 }
