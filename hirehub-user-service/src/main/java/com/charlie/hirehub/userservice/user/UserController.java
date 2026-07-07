@@ -1,7 +1,9 @@
 package com.charlie.hirehub.userservice.user;
 
+import com.charlie.hirehub.userservice.user.dto.request.LoginRequest;
 import com.charlie.hirehub.userservice.user.dto.request.RegisterUserRequest;
 import com.charlie.hirehub.userservice.user.dto.request.UpdateUserRequest;
+import com.charlie.hirehub.userservice.user.dto.response.LoginResponse;
 import com.charlie.hirehub.userservice.user.dto.response.UserDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +14,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /*
-POST   /users/register
+
 GET    /users/{id}
 GET    /users
 PUT    /users/{id}
 DELETE /users/{id}
 ------------------------
+
+POST   /users/register
 POST /users/login
 */
 
@@ -64,5 +68,13 @@ public class UserController {
 
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(
+            @Valid @RequestBody LoginRequest request) {
+
+        LoginResponse response = userService.login(request);
+        return ResponseEntity.ok(response);
     }
 }

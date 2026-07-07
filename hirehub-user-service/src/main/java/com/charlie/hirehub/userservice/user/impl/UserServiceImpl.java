@@ -3,8 +3,10 @@ package com.charlie.hirehub.userservice.user.impl;
 import com.charlie.hirehub.userservice.user.User;
 import com.charlie.hirehub.userservice.user.UserRepository;
 import com.charlie.hirehub.userservice.user.UserService;
+import com.charlie.hirehub.userservice.user.dto.request.LoginRequest;
 import com.charlie.hirehub.userservice.user.dto.request.RegisterUserRequest;
 import com.charlie.hirehub.userservice.user.dto.request.UpdateUserRequest;
+import com.charlie.hirehub.userservice.user.dto.response.LoginResponse;
 import com.charlie.hirehub.userservice.user.dto.response.UserDTO;
 import com.charlie.hirehub.userservice.user.exception.UserAlreadyExistsException;
 import com.charlie.hirehub.userservice.user.exception.UserNotFoundException;
@@ -12,6 +14,9 @@ import com.charlie.hirehub.userservice.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +26,9 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepo;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+
     private static final Logger logger =
             LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -38,6 +46,11 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = UserMapper.toEntity(request);
+
+        //Hashing the password before saving it in the DB
+        String hashedPassword = passwordEncoder.encode(request.getPassword());
+        user.setPassword(hashedPassword);
+
         User savedUser = userRepo.save(user);
 
         logger.info("Successfully registered user with id {} and email {}",
@@ -115,5 +128,18 @@ public class UserServiceImpl implements UserService {
         userRepo.delete(user);
 
         logger.info("Successfully deleted user with id {}", id);
+    }
+
+    @Override
+    public LoginResponse login(LoginRequest request) {
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+
+        return new LoginResponse("JWT_TOKEN");
     }
 }
