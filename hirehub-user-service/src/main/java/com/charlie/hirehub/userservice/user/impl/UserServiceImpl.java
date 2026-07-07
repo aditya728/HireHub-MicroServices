@@ -11,6 +11,7 @@ import com.charlie.hirehub.userservice.user.dto.response.UserDTO;
 import com.charlie.hirehub.userservice.user.exception.UserAlreadyExistsException;
 import com.charlie.hirehub.userservice.user.exception.UserNotFoundException;
 import com.charlie.hirehub.userservice.user.mapper.UserMapper;
+import com.charlie.hirehub.userservice.user.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     private static final Logger logger =
             LoggerFactory.getLogger(UserServiceImpl.class);
@@ -140,6 +142,7 @@ public class UserServiceImpl implements UserService {
                 )
         );
 
-        return new LoginResponse("JWT_TOKEN");
+//        String jwt = jwtService.generateToken(userDetails);
+        return null;
     }
 }
