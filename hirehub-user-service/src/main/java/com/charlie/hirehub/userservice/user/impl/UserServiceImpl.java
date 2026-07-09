@@ -8,15 +8,19 @@ import com.charlie.hirehub.userservice.user.dto.request.RegisterUserRequest;
 import com.charlie.hirehub.userservice.user.dto.request.UpdateUserRequest;
 import com.charlie.hirehub.userservice.user.dto.response.LoginResponse;
 import com.charlie.hirehub.userservice.user.dto.response.UserDTO;
+import com.charlie.hirehub.userservice.user.enums.Role;
 import com.charlie.hirehub.userservice.user.exception.UserAlreadyExistsException;
 import com.charlie.hirehub.userservice.user.exception.UserNotFoundException;
 import com.charlie.hirehub.userservice.user.mapper.UserMapper;
+import com.charlie.hirehub.userservice.user.security.AuthenticatedUser;
 import com.charlie.hirehub.userservice.user.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -135,14 +139,29 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginResponse login(LoginRequest request) {
 
-        authenticationManager.authenticate(
+        logger.info("Performing login with email {}", request.getEmail());
+
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()
                 )
         );
 
-//        String jwt = jwtService.generateToken(userDetails);
-        return null;
+        AuthenticatedUser authenticatedUser = (AuthenticatedUser) authentication.getPrincipal();
+        String jwtToken = jwtService.generateToken(authenticatedUser);
+
+        return generateLoginResponseWithUser(authenticatedUser, jwtToken);
+    }
+
+    private LoginResponse generateLoginResponseWithUser(AuthenticatedUser authenticatedUser, String jwtToken){
+
+        logger.info("Login successful with email {}", authenticatedUser.getUser().getEmail());
+        return new LoginResponse(
+                jwtToken,
+                authenticatedUser.getUser().getEmail(),
+                authenticatedUser.getUser().getRole(),
+                "Login successful."
+        );
     }
 }
