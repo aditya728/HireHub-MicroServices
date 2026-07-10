@@ -1,5 +1,6 @@
 package com.charlie.hirehub.userservice.user.config;
 
+import com.charlie.hirehub.userservice.user.security.JwtAuthenticationEntryPoint;
 import com.charlie.hirehub.userservice.user.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
@@ -34,6 +36,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint))
 
                 .addFilterBefore(
                         jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class
