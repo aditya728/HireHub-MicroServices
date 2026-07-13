@@ -34,7 +34,6 @@ public class JwtService {
                 .compact();
     }
 
-    //test comment 2
     public boolean isTokenValid(String token, UserDetails userDetails) {
 
         String username = extractUsername(token);
