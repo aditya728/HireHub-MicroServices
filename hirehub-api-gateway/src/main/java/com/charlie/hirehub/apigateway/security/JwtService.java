@@ -1,4 +1,4 @@
-package com.charlie.hirehub.userservice.user.security;
+package com.charlie.hirehub.apigateway.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -24,27 +24,6 @@ public class JwtService {
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
-    }
-
-    public String generateToken(AuthenticatedUser authenticatedUser){
-
-        Map<String, Object> claims = new HashMap<>();
-
-        claims.put("userId", authenticatedUser.getUser().getId());
-        claims.put("role", authenticatedUser.getUser().getRole().name());
-
-        return Jwts.builder()
-                .claims(claims)
-                .subject(authenticatedUser.getUsername())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
-                .signWith(getSigningKey())
-                .compact();
-    }
-
-    public boolean isTokenValid(String token) {
-
-        return !isTokenExpired(token);
     }
 
     public String extractUsername(String token) {
