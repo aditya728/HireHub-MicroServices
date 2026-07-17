@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -75,6 +74,19 @@ public class JwtService {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+    }
+
+    // Extract all claims at once and share to JwtFilter
+    // to avoid parsing the Token 3 times for userId, role, email
+    public AuthenticatedPrincipal getAuthenticatedPrincipal(String token) {
+
+        Claims claims = extractAllClaims(token);
+
+        return new AuthenticatedPrincipal(
+                claims.get("userId", Long.class),
+                claims.getSubject(),
+                claims.get("role", String.class)
+        );
     }
 
     // Generic method to extract any particular type of claim. Eg: username, issuedAt, expiration etc.

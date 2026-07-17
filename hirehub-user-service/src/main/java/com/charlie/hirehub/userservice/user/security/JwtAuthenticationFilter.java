@@ -1,4 +1,4 @@
-package com.charlie.hirehub.apigateway.security;
+package com.charlie.hirehub.userservice.user.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -7,11 +7,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -24,49 +22,47 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(JwtAuthenticationFilter.class);
-
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
             throws ServletException, IOException {
 
-        logger.info("JwtAuthenticationFilter executed");
-
-        // 1. Check if the request has a JWT Token
         String authHeader = request.getHeader("Authorization");
 
-        if(authHeader==null || !authHeader.startsWith("Bearer ")){
+        // No JWT present -> Continue the filter chain
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 2. Extract the JWT
-        String jwt = authHeader.substring(7);
-
-        // 3. Extract the username, role & userId inside the AuthenticatedPrincipal
         try {
+            String token = authHeader.substring(7);
 
-            AuthenticatedPrincipal principal = jwtService.getAuthenticatedPrincipal(jwt);
+            if (jwtService.isTokenValid(token)
+                    && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                AuthenticatedPrincipal principal =
+                        jwtService.getAuthenticatedPrincipal(token);
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 principal,
                                 null,
-                                List.of(new SimpleGrantedAuthority("ROLE_" + principal.getRole().name()))
+                                List.of(principal.getAuthority())
                         );
 
-                SecurityContextHolder.getContext()
-                        .setAuthentication(authentication);
+                authentication.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request)
+                );
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
 
         } catch (JwtException | IllegalArgumentException ex) {
-            logger.warn("JWT validation failed", ex);
+            // Invalid JWT -> Leave SecurityContext empty.
+            // Spring Security will invoke JwtAuthenticationEntryPoint
+            // when a protected endpoint is accessed.
         }
 
         filterChain.doFilter(request, response);
