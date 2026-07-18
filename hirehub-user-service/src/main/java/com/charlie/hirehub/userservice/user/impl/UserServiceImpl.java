@@ -158,7 +158,6 @@ public class UserServiceImpl implements UserService {
 
     private LoginResponse generateLoginResponseWithUser(AuthenticatedUser authenticatedUser, String jwtToken){
 
-        logger.info("Login successful with email {}", authenticatedUser.getUser().getEmail());
         return new LoginResponse(
                 jwtToken,
                 authenticatedUser.getUser().getEmail(),

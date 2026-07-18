@@ -7,6 +7,7 @@ import com.charlie.hirehub.jobservice.job.dto.response.JobDetailsResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,23 +23,27 @@ public class JobController{
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<JobDetailsResponse>> findAllJobs(){
         return new ResponseEntity<>(jobService.findAllJobs(), HttpStatus.OK);
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER')")
     public ResponseEntity<JobCreatedResponse> createJob(@Valid @RequestBody CreateJobRequest job){
         JobCreatedResponse jobResponse = jobService.createJob(job);
         return new ResponseEntity<>(jobResponse, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<JobDetailsResponse> getJobById(@PathVariable Long id){
         JobDetailsResponse jobWithCompany =  jobService.getJobById(id);
         return new ResponseEntity<>(jobWithCompany, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER')")
     public ResponseEntity<Void> deleteJobById(@PathVariable Long id){
 
         jobService.deleteJobById(id);
@@ -46,6 +51,7 @@ public class JobController{
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER')")
     public ResponseEntity<Job> updateJobById(@PathVariable Long id,
                                                 @Valid @RequestBody UpdateJobRequest updatedJob){
 
@@ -54,6 +60,7 @@ public class JobController{
     }
 
     @GetMapping("/company/{companyId}/exists")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Boolean> existsJobsByCompanyId(@PathVariable Long companyId){
 
         boolean jobExists = jobService.existsJobsByCompanyId(companyId);
