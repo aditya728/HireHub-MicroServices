@@ -151,6 +151,8 @@ public class UserServiceImpl implements UserService {
         AuthenticatedUser authenticatedUser = (AuthenticatedUser) authentication.getPrincipal();
         String jwtToken = jwtService.generateToken(authenticatedUser);
 
+        logger.info("Login successful for email {}", request.getEmail());
+
         return generateLoginResponseWithUser(authenticatedUser, jwtToken);
     }
 
