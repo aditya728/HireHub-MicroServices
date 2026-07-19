@@ -1,7 +1,7 @@
-package com.charlie.hirehub.jobservice.job.config;
+package com.charlie.hirehub.companyservice.company.config;
 
-import com.charlie.hirehub.jobservice.job.security.JwtAuthenticationEntryPoint;
-import com.charlie.hirehub.jobservice.job.security.JwtAuthenticationFilter;
+import com.charlie.hirehub.companyservice.company.security.JwtAuthenticationEntryPoint;
+import com.charlie.hirehub.companyservice.company.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

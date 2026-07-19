@@ -5,6 +5,7 @@ import com.charlie.hirehub.reviewservice.review.dto.request.UpdateReviewRequest;
 import com.charlie.hirehub.reviewservice.review.dto.response.ReviewDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,12 +28,14 @@ public class ReviewController{
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<ReviewDTO>> getAllReviewsForCompany(@RequestParam Long companyId){
         List<ReviewDTO> reviews = reviewService.getAllReviewsForCompany(companyId);
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'CANDIDATE')")
     public ResponseEntity<ReviewDTO> postReviewForCompany(@RequestParam Long companyId, @RequestBody PostReviewRequest reviewRequest){
 
         ReviewDTO reviewPosted = reviewService.postReviewForCompany(companyId, reviewRequest);
@@ -40,6 +43,7 @@ public class ReviewController{
     }
 
     @GetMapping("/{reviewId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ReviewDTO> getReviewById( @PathVariable Long reviewId){
 
         ReviewDTO review = reviewService.getReviewById(reviewId);
@@ -47,6 +51,7 @@ public class ReviewController{
     }
 
     @PutMapping("/{reviewId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CANDIDATE')")
     public ResponseEntity<ReviewDTO> updateReviewById(@PathVariable Long reviewId,
                                     @RequestBody UpdateReviewRequest updateReviewRequest){
 
@@ -55,6 +60,7 @@ public class ReviewController{
     }
 
     @DeleteMapping("/{reviewId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CANDIDATE')")
     public ResponseEntity<Void> deleteReviewById(@PathVariable Long reviewId){
 
         reviewService.deleteReviewById(reviewId);
@@ -62,6 +68,7 @@ public class ReviewController{
     }
 
     @GetMapping("/company/{companyId}/exists")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Boolean> reviewsExistsByCompanyId(@PathVariable Long companyId){
         return new ResponseEntity<>(reviewService.reviewsExistsByCompanyId(companyId), HttpStatus.OK);
     }

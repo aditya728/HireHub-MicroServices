@@ -6,6 +6,7 @@ import com.charlie.hirehub.companyservice.company.dto.response.CompanyDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,12 +22,14 @@ public class CompanyController{
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<CompanyDTO>> findAllCompanies(){
         List<CompanyDTO> companies = companyService.findAllCompanies();
         return new ResponseEntity<>(companies, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CompanyDTO> findCompanyById(@PathVariable Long id){
 
         CompanyDTO company = companyService.findCompanyById(id);
@@ -34,12 +37,14 @@ public class CompanyController{
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER')")
     public ResponseEntity<CompanyDTO> createCompany(@Valid @RequestBody CreateCompanyRequest companyRequest){
         CompanyDTO companyDTO = companyService.createCompany(companyRequest);
         return new ResponseEntity<>(companyDTO, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER')")
     public ResponseEntity<Void> deleteCompanyById(@PathVariable Long id){
 
         companyService.deleteCompanyById(id);
@@ -47,6 +52,7 @@ public class CompanyController{
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER')")
     public ResponseEntity<String> updateCompanyById(@PathVariable Long id, @RequestBody UpdateCompanyRequest updateCompanyRequest){
 
         CompanyDTO companyUpdated = companyService.updateCompanyById(id, updateCompanyRequest);

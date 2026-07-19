@@ -88,6 +88,22 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
 
+    @ExceptionHandler(ReviewServiceUnavailableException.class)
+    public ResponseEntity<ErrorResponse> jobServiceUnavailable(
+            ReviewServiceUnavailableException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
+    }
+
     @ExceptionHandler(TooManyRequestsException.class)
     public ResponseEntity<ErrorResponse> handleTooManyRequests(
             TooManyRequestsException ex,

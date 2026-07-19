@@ -45,6 +45,22 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
+    @ExceptionHandler(ReviewNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCompanyNotFound(
+            ReviewNotFoundException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
     @ExceptionHandler(CompanyServiceUnavailableException.class)
     public ResponseEntity<ErrorResponse> handleCompanyServiceUnavailable(
             CompanyServiceUnavailableException ex,
