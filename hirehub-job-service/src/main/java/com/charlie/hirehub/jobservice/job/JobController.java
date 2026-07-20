@@ -43,7 +43,7 @@ public class JobController{
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER')")
+    @PreAuthorize("hasRole('ADMIN') || @jobSecurity.isOwner(#id)")
     public ResponseEntity<Void> deleteJobById(@PathVariable Long id){
 
         jobService.deleteJobById(id);
@@ -51,7 +51,7 @@ public class JobController{
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER')")
+    @PreAuthorize("hasRole('ADMIN') || @jobSecurity.isOwner(#id)")
     public ResponseEntity<Job> updateJobById(@PathVariable Long id,
                                                 @Valid @RequestBody UpdateJobRequest updatedJob){
 

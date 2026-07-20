@@ -21,6 +21,8 @@ public class Job {
 
     private Long companyId;
 
+    private Long createdBy;
+
     /*
     A noArg Constructor is needed as JPA needs to create instances of entity class while retrieval of data
      */
