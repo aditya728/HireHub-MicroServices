@@ -4,6 +4,7 @@ import com.charlie.hirehub.jobservice.job.Job;
 import com.charlie.hirehub.jobservice.job.dto.request.CreateJobRequest;
 import com.charlie.hirehub.jobservice.job.dto.response.JobCreatedResponse;
 import com.charlie.hirehub.jobservice.job.dto.response.JobDetailsResponse;
+import com.charlie.hirehub.jobservice.job.dto.response.UpdateJobResponse;
 import com.charlie.hirehub.jobservice.job.external.Company;
 import com.charlie.hirehub.jobservice.job.external.Review;
 
@@ -51,6 +52,21 @@ public class JobMapper {
         response.setJobId(job.getId());
         response.setTitle(job.getTitle());
         response.setDescription(job.getDescription());
+
+        return response;
+    }
+
+    public static UpdateJobResponse toUpdateJobResponse(Job job) {
+
+        UpdateJobResponse response = new UpdateJobResponse();
+
+        response.setId(job.getId());
+        response.setTitle(job.getTitle());
+        response.setDescription(job.getDescription());
+        response.setMinSalary(job.getMinSalary());
+        response.setMaxSalary(job.getMaxSalary());
+        response.setLocation(job.getLocation());
+        response.setCompanyId(job.getCompanyId());
 
         return response;
     }

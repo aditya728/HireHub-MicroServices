@@ -4,6 +4,7 @@ import com.charlie.hirehub.jobservice.job.dto.request.CreateJobRequest;
 import com.charlie.hirehub.jobservice.job.dto.request.UpdateJobRequest;
 import com.charlie.hirehub.jobservice.job.dto.response.JobCreatedResponse;
 import com.charlie.hirehub.jobservice.job.dto.response.JobDetailsResponse;
+import com.charlie.hirehub.jobservice.job.dto.response.UpdateJobResponse;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public interface JobService {
 
     void deleteJobById(Long id);
 
-    Job updateJobById(Long id, UpdateJobRequest updatedJob);
+    UpdateJobResponse updateJobById(Long id, UpdateJobRequest updatedJob);
 
     boolean existsJobsByCompanyId(Long companyId);
 }

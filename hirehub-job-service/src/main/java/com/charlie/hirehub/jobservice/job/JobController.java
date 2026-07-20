@@ -4,6 +4,7 @@ import com.charlie.hirehub.jobservice.job.dto.request.CreateJobRequest;
 import com.charlie.hirehub.jobservice.job.dto.request.UpdateJobRequest;
 import com.charlie.hirehub.jobservice.job.dto.response.JobCreatedResponse;
 import com.charlie.hirehub.jobservice.job.dto.response.JobDetailsResponse;
+import com.charlie.hirehub.jobservice.job.dto.response.UpdateJobResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,10 +53,10 @@ public class JobController{
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') || @jobSecurity.isOwner(#id)")
-    public ResponseEntity<Job> updateJobById(@PathVariable Long id,
-                                                @Valid @RequestBody UpdateJobRequest updatedJob){
+    public ResponseEntity<UpdateJobResponse> updateJobById(@PathVariable Long id,
+                                                           @Valid @RequestBody UpdateJobRequest updatedJob){
 
-        Job job = jobService.updateJobById(id, updatedJob);
+        UpdateJobResponse job = jobService.updateJobById(id, updatedJob);
         return new ResponseEntity<>(job, HttpStatus.OK);
     }
 

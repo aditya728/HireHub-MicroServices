@@ -8,6 +8,7 @@ import com.charlie.hirehub.jobservice.job.dto.request.CreateJobRequest;
 import com.charlie.hirehub.jobservice.job.dto.request.UpdateJobRequest;
 import com.charlie.hirehub.jobservice.job.dto.response.JobCreatedResponse;
 import com.charlie.hirehub.jobservice.job.dto.response.JobDetailsResponse;
+import com.charlie.hirehub.jobservice.job.dto.response.UpdateJobResponse;
 import com.charlie.hirehub.jobservice.job.exception.JobNotFoundException;
 import com.charlie.hirehub.jobservice.job.exception.TooManyRequestsException;
 import com.charlie.hirehub.jobservice.job.external.Company;
@@ -137,7 +138,7 @@ public class JobServiceImpl implements JobService {
 
     @Override
     @RateLimiter(name = "writeJobRateLimiter", fallbackMethod = "updateJobByIdRateLimiterFallback")
-    public Job updateJobById(Long id, UpdateJobRequest request) {
+    public UpdateJobResponse updateJobById(Long id, UpdateJobRequest request) {
 
         logger.info("Updating job with id {}.", id);
 
@@ -152,7 +153,8 @@ public class JobServiceImpl implements JobService {
 
         logger.info("Job with id {} updated successfully.", id);
 
-        return jobRepo.save(oldJob);
+        Job updatedJob = jobRepo.save(oldJob);
+        return JobMapper.toUpdateJobResponse(updatedJob);
     }
 
     @Override
