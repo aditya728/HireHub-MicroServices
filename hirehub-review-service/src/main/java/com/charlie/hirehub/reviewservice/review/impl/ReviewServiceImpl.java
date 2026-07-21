@@ -11,6 +11,7 @@ import com.charlie.hirehub.reviewservice.review.exception.TooManyRequestsExcepti
 import com.charlie.hirehub.reviewservice.review.external.Company;
 import com.charlie.hirehub.reviewservice.review.integration.CompanyClientService;
 import com.charlie.hirehub.reviewservice.review.mapper.ReviewMapper;
+import com.charlie.hirehub.reviewservice.review.security.ReviewSecurity;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.slf4j.Logger;
@@ -24,12 +25,16 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepo;
     private final CompanyClientService companyClientService;
+
+    private final ReviewSecurity reviewSecurity;
+
     private static final Logger logger =
             LoggerFactory.getLogger(ReviewServiceImpl.class);
 
-    public ReviewServiceImpl(ReviewRepository reviewRepo, CompanyClientService companyClientService) {
+    public ReviewServiceImpl(ReviewRepository reviewRepo, CompanyClientService companyClientService, ReviewSecurity reviewSecurity) {
         this.reviewRepo = reviewRepo;
         this.companyClientService = companyClientService;
+        this.reviewSecurity = reviewSecurity;
     }
 
     @Override
@@ -58,7 +63,10 @@ public class ReviewServiceImpl implements ReviewService {
         Company company = companyClientService.validateCompany(companyId);
 
         Review review = ReviewMapper.toReview(reviewRequest);
+
         review.setCompanyId(companyId);
+        Long userId = reviewSecurity.getCurrentUserId();
+        review.setCreatedBy(userId);
 
         Review savedReview = reviewRepo.save(review);
 

@@ -44,7 +44,7 @@ public class CompanyController{
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER')")
+    @PreAuthorize("hasRole('ADMIN') || @companySecurity.isOwner(#id)")
     public ResponseEntity<Void> deleteCompanyById(@PathVariable Long id){
 
         companyService.deleteCompanyById(id);
@@ -52,10 +52,10 @@ public class CompanyController{
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER')")
-    public ResponseEntity<String> updateCompanyById(@PathVariable Long id, @RequestBody UpdateCompanyRequest updateCompanyRequest){
+    @PreAuthorize("hasRole('ADMIN') || @companySecurity.isOwner(#id)")
+    public ResponseEntity<CompanyDTO> updateCompanyById(@PathVariable Long id, @RequestBody UpdateCompanyRequest updateCompanyRequest){
 
         CompanyDTO companyUpdated = companyService.updateCompanyById(id, updateCompanyRequest);
-        return new ResponseEntity<>("Company updated successfully", HttpStatus.OK);
+        return new ResponseEntity<>(companyUpdated, HttpStatus.OK);
     }
 }

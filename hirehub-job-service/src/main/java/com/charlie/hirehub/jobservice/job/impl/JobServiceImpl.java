@@ -16,14 +16,11 @@ import com.charlie.hirehub.jobservice.job.external.Review;
 import com.charlie.hirehub.jobservice.job.integration.CompanyClientService;
 import com.charlie.hirehub.jobservice.job.integration.ReviewClientService;
 import com.charlie.hirehub.jobservice.job.mapper.JobMapper;
-import com.charlie.hirehub.jobservice.job.security.AuthenticatedPrincipal;
 import com.charlie.hirehub.jobservice.job.security.JobSecurity;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

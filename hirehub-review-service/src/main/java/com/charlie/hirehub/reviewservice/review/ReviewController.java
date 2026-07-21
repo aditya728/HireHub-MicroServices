@@ -51,7 +51,7 @@ public class ReviewController{
     }
 
     @PutMapping("/{reviewId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CANDIDATE')")
+    @PreAuthorize("hasRole('ADMIN') || @reviewSecurity.isOwner(#reviewId)")
     public ResponseEntity<ReviewDTO> updateReviewById(@PathVariable Long reviewId,
                                     @RequestBody UpdateReviewRequest updateReviewRequest){
 
@@ -60,7 +60,7 @@ public class ReviewController{
     }
 
     @DeleteMapping("/{reviewId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CANDIDATE')")
+    @PreAuthorize("hasRole('ADMIN') || @reviewSecurity.isOwner(#reviewId)")
     public ResponseEntity<Void> deleteReviewById(@PathVariable Long reviewId){
 
         reviewService.deleteReviewById(reviewId);

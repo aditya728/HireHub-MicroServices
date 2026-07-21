@@ -13,6 +13,7 @@ import com.charlie.hirehub.companyservice.company.exception.TooManyRequestsExcep
 import com.charlie.hirehub.companyservice.company.integration.JobClientService;
 import com.charlie.hirehub.companyservice.company.integration.ReviewClientService;
 import com.charlie.hirehub.companyservice.company.mapper.CompanyMapper;
+import com.charlie.hirehub.companyservice.company.security.CompanySecurity;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.slf4j.Logger;
@@ -28,13 +29,16 @@ public class CompanyServiceImpl implements CompanyService {
     private final JobClientService jobClientService;
     private final ReviewClientService reviewClientService;
 
+    private final CompanySecurity companySecurity;
+
     private static final Logger logger =
             LoggerFactory.getLogger(CompanyServiceImpl.class);
 
-    public CompanyServiceImpl(CompanyRepository companyRepo, JobClientService jobClientService, ReviewClientService reviewClientService){
+    public CompanyServiceImpl(CompanyRepository companyRepo, JobClientService jobClientService, ReviewClientService reviewClientService, CompanySecurity companySecurity){
         this.companyRepo = companyRepo;
         this.jobClientService = jobClientService;
         this.reviewClientService = reviewClientService;
+        this.companySecurity = companySecurity;
     }
 
     @Override
@@ -73,6 +77,10 @@ public class CompanyServiceImpl implements CompanyService {
         logger.info("Creating a company with name: {}", companyRequest.getName());
 
         Company company = CompanyMapper.toCompany(companyRequest);
+
+        Long userId = companySecurity.getCurrentUserId();
+        company.setCreatedBy(userId);
+
         Company savedCompany = companyRepo.save(company);
 
         logger.info("Successfully created {} company", savedCompany.getName());

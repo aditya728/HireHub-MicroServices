@@ -3,7 +3,7 @@ package com.charlie.hirehub.companyservice.company.exception;
 public class ReviewServiceUnavailableException extends RuntimeException {
 
     public ReviewServiceUnavailableException() {
-        super("Job Service Unavailable!");
+        super("Review Service Unavailable!");
     }
 
     public ReviewServiceUnavailableException(String message) {

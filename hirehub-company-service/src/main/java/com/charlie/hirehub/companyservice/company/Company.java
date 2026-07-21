@@ -20,6 +20,8 @@ public class Company {
     private String name;
     private String description;
 
+    private Long createdBy;
+
     //List<Long> jobIds;
 
     //List<Long> reviewIds;
