@@ -4,6 +4,7 @@ package com.charlie.hirehub.jobservice.job.impl;
 import com.charlie.hirehub.jobservice.job.Job;
 import com.charlie.hirehub.jobservice.job.JobRepository;
 import com.charlie.hirehub.jobservice.job.JobService;
+import com.charlie.hirehub.jobservice.job.config.cache.CacheNames;
 import com.charlie.hirehub.jobservice.job.dto.request.CreateJobRequest;
 import com.charlie.hirehub.jobservice.job.dto.request.UpdateJobRequest;
 import com.charlie.hirehub.jobservice.job.dto.response.JobCreatedResponse;
@@ -21,6 +22,7 @@ import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -110,6 +112,7 @@ public class JobServiceImpl implements JobService {
 
     @Override
     @RateLimiter(name = "readJobRateLimiter", fallbackMethod = "getJobByIdRateLimiterFallback")
+    @Cacheable(CacheNames.JOBS)
     public JobDetailsResponse getJobById(Long id) {
 
         logger.debug("Fetching job with id {}.", id);
