@@ -22,6 +22,8 @@ import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -125,6 +127,7 @@ public class JobServiceImpl implements JobService {
 
     @Override
     @RateLimiter(name = "writeJobRateLimiter", fallbackMethod = "deleteJobByIdRateLimiterFallback")
+    @CacheEvict(value = CacheNames.JOBS, key = "#id")
     public void deleteJobById(Long id) {
 
         logger.info("Deleting job with id {}.", id);
@@ -138,6 +141,7 @@ public class JobServiceImpl implements JobService {
 
     @Override
     @RateLimiter(name = "writeJobRateLimiter", fallbackMethod = "updateJobByIdRateLimiterFallback")
+    @CachePut(value = CacheNames.JOBS, key = "#id")
     public UpdateJobResponse updateJobById(Long id, UpdateJobRequest request) {
 
         logger.info("Updating job with id {}.", id);
